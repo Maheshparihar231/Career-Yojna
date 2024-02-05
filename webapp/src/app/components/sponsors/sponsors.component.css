@@ -45,5 +45,9 @@
 	.slide {
 		height: 100px;
 		width: 250px;
+		pointer-events: none;
 	}
+}
+img{
+	pointer-events: none;
 }

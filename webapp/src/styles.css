@@ -14,7 +14,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 
-.hideScrollbar::-webkit-scrollbar{
+::-webkit-scrollbar{
     display: none;
 }
 
