@@ -23,6 +23,12 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { SearchComponent } from './page/search/search.component';
 import { ProfileComponent } from './page/profile/profile.component';
 import { ProfiledataComponent } from './components/profiledata/profiledata.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import { ProfileupdateComponent } from './components/pop-up/profileupdate/profileupdate.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +43,9 @@ import { ProfiledataComponent } from './components/profiledata/profiledata.compo
     AuthenticationComponent,
     SearchComponent,
     ProfileComponent,
-    ProfiledataComponent
+    ProfiledataComponent,
+    ProfileupdateComponent,
+    WorkupdateComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,12 +54,16 @@ import { ProfiledataComponent } from './components/profiledata/profiledata.compo
     MatMenuModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressBarModule,
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatSnackBarModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
     MatDividerModule,
+    MatGridListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

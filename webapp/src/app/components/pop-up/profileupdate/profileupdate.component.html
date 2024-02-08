@@ -1,0 +1,52 @@
+<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+<div class="p-4 justify-center items-center">
+    <form [formGroup]="profileForm" (ngSubmit)="submit()">
+        <div class="flex items-center space-x-6">
+            <div class="shrink-0">
+                <img id="preview_img" class="h-16 w-16 object-cover rounded-full" [src]="previewImageUrl"
+                    alt="Current profile photo" />
+            </div>
+            <label class="block">
+                <span class="sr-only">Choose profile photo</span>
+                <input type="file" (change)="loadFile($event)" class="block pointer-events-none w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-violet-50 file:text-violet-700
+                                hover:file:bg-violet-100" />
+            </label>
+        </div>
+        <div class="flex items-center justify-center mt-5">
+            <div class="mx-auto max-w-xs">
+                <label for="example1" class="mb-1 block text-sm font-medium text-gray-700">Upload Resume</label>
+                <input id="example1" (change)="loadResume($event)" type="file" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-500 
+                        file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-700 
+                        focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+            </div>
+        </div>
+        <div class="mt-5">
+            <label for="name" class="block text-base font-medium text-[#07074D]">
+                Full Name
+            </label>
+            <input type="text" name="name" id="name" placeholder="Full Name"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+        </div>
+        <div class="mt-5">
+            <label for="name" class="block text-base font-medium text-[#07074D]">
+                Current Role
+            </label>
+            <input type="text" name="name" id="name" placeholder="Current Role"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+        </div>
+        <div class="mt-5">
+            <label for="name" class="block text-base font-medium text-[#07074D]">
+                Current Company
+            </label>
+            <input type="text" name="name" id="name" placeholder="Current Company"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+        </div>
+        <div class="mt-6">
+            <button style="width: 100%;" mat-raised-button>Update</button>
+        </div>
+    </form>
+</div>

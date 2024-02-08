@@ -2,19 +2,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
 .cdk-overlay-pane {
     position: absolute;
- }
+}
 
- .box{
+.box {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     padding: 15px;
 }
 
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
     display: none;
 }
 
@@ -26,3 +35,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     min-width: 1px;
     min-height: 1px;
 }
+
+
+.mat-mdc-snack-bar-container {
+    &.warning {
+      --mdc-snackbar-container-color: #3ed36d;
+      --mat-mdc-snack-bar-button-color: #fff;
+      --mdc-snackbar-supporting-text-color: #fff;
+    }
+  }
