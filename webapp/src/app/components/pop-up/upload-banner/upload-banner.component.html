@@ -1,0 +1,23 @@
+<mat-progress-bar *ngIf="showProgressBar" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+<div class="p-4 justify-center items-center">
+    <form (submit)="upload($event)">
+        <div class="flex flex-col items-center space-x-6">
+            <div class="shrink-0 mb-4">
+                <img id="preview_img" class="object-cover" style="height: 200px;" [src]="previewImageUrl"
+                    alt="Current profile photo" />
+            </div>
+            <label class="block">
+                <span class="sr-only">Choose profile photo</span>
+                <input type="file" (change)="loadFile($event)" class="block pointer-events-none w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-violet-50 file:text-violet-700
+                            hover:file:bg-violet-100" />
+            </label>
+        </div>
+        <div class="mt-6">
+            <button type="submit" style="width: 100%;" mat-raised-button>Upload</button>
+        </div>
+    </form>
+</div>

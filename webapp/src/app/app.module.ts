@@ -29,6 +29,13 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.component';
+import { DataComponent } from './page/data/data.component';
+import {AngularFireModule} from '@angular/fire/compat'
+import { environment } from './environment/environment';
+import { UploadBannerComponent } from './components/pop-up/upload-banner/upload-banner.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
+import {map, startWith} from 'rxjs/operators';
 
 @NgModule({
   declarations: [
@@ -46,6 +53,8 @@ import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.c
     ProfiledataComponent,
     ProfileupdateComponent,
     WorkupdateComponent,
+    DataComponent,
+    UploadBannerComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,16 +63,21 @@ import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.c
     MatMenuModule,
     MatButtonModule,
     MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatProgressBarModule,
+    MatAutocompleteModule,
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
     MatSnackBarModule,
     MatDialogModule,
     FormsModule,
+    AsyncPipe,
     ReactiveFormsModule,
     MatDividerModule,
     MatGridListModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
   providers: [],
   bootstrap: [AppComponent]
