@@ -36,11 +36,10 @@ body {
     min-height: 1px;
 }
 
-
-.mat-mdc-snack-bar-container {
+/* .mat-mdc-snack-bar-container {
     &.warning {
       --mdc-snackbar-container-color: #3ed36d;
       --mat-mdc-snack-bar-button-color: #fff;
       --mdc-snackbar-supporting-text-color: #fff;
     }
-  }
+  } */

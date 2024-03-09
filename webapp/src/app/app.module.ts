@@ -36,6 +36,12 @@ import { UploadBannerComponent } from './components/pop-up/upload-banner/upload-
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {AsyncPipe} from '@angular/common';
 import {map, startWith} from 'rxjs/operators';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { UploadJobComponent } from './components/upload-job/upload-job.component';
+import { JobsTableComponent } from './components/jobs-table/jobs-table.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSortModule} from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -55,6 +61,8 @@ import {map, startWith} from 'rxjs/operators';
     WorkupdateComponent,
     DataComponent,
     UploadBannerComponent,
+    UploadJobComponent,
+    JobsTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,11 +74,15 @@ import {map, startWith} from 'rxjs/operators';
     FormsModule,
     ReactiveFormsModule,
     MatProgressBarModule,
+    MatExpansionModule,
     MatAutocompleteModule,
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
     MatSnackBarModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule,
     MatDialogModule,
     FormsModule,
     AsyncPipe,
