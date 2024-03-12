@@ -7,26 +7,27 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable, finalize, map, startWith, tap } from 'rxjs';
 import { UploadBannerComponent } from '../pop-up/upload-banner/upload-banner.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { SnackbarService } from '../core/snackbar.service';
 
 @Component({
   selector: 'app-upload-job',
   templateUrl: './upload-job.component.html',
   styleUrls: ['./upload-job.component.css']
 })
-export class UploadJobComponent implements OnInit{
-  
+export class UploadJobComponent implements OnInit {
+
   jobForm: FormGroup
   downloadLink: any;
 
   ngOnInit(): void {
     //this.getAllJobs();
     this.getAllBanners();
-    console.log(this.options);
+    // console.log(this.options);
   }
 
   constructor(private data: DataService,
     private fb: FormBuilder,
-
+    private snackbar: SnackbarService,
     private afStorage: AngularFireStorage,
     private _dialogRef: MatDialog) {
 
@@ -115,13 +116,15 @@ export class UploadJobComponent implements OnInit{
     }
   }
 
-
-
   addJob() {
     if (this.jobForm.valid) {
       console.log(this.jobForm.value);
       console.log('sent');
-      this.data.addData(this.jobForm.value);
+      this.data.addData(this.jobForm.value).then(() => {
+        window.location.reload();
+      });
+      this.snackbar.openSnackBar("uploaded")
+      this.jobForm.reset();
     }
     else {
       alert('enter data')

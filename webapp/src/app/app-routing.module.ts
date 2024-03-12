@@ -7,6 +7,7 @@ import { SignupComponent } from './components/signup/signup.component';
 import { SearchComponent } from './page/search/search.component';
 import { ProfileComponent } from './page/profile/profile.component';
 import { DataComponent } from './page/data/data.component';
+import { JobDatailComponent } from './page/job-datail/job-datail.component';
 
 const routes: Routes = [
   {path:"",pathMatch:"full",redirectTo: "home" },
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: "search", component: SearchComponent },
   { path: "profile", component: ProfileComponent },
   { path: "manage", component: DataComponent },
+  { path: "job/:id", component: JobDatailComponent },
 ];
 
 @NgModule({

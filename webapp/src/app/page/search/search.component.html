@@ -16,50 +16,54 @@
             <div class="col-span-3">
                 <div class="p-4">
                     <!-- cards line -->
-                    <div>
-                        <div class="flex">
+                    <div *ngFor="let job of jobList" (click)="navigateToJob(job.id)" class="cursor-pointer">
+                        <div class="flex mb-4" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
                             <div class="">
-                                <img src="../../../assets/images/Career_Yojna.png" style="width: 200px" />
+                                <img [src]="job.img_url" style="width: 200px; height: 200px;" />
                             </div>
                             <div class="flex pl-4 p-3 flex-col justify-between">
                                 <div class=" cursor-pointer changing">
-                                    <p style="font-size: 1.5rem;" class="text-xl">IBM Off Campus Placement Jobs in India for Freshers 2024</p>
+                                    <p style="font-size: 1.5rem;" class="text-xl">{{ job.title }}</p>
+                                    <p style="font-size: 1rem" class="text-gray-700">{{ job.mini_description }}</p>
                                 </div>
                                 <div class="flex">
                                     <span class="mr-3">
-                                        <a class="font-bold" href="">CareerYojna</a>
+                                        <a class="font-bold" href="">{{ job.company_name }}</a>
                                     </span>
-                                    <span class="font-light">
-                                        20 March , 2024
-                                    </span>
+                                    <span class="font-light">{{ job.post_date | date:'dd MMM, yyyy' }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        
+
             <!-- Right column for latest products -->
             <div class="col-span-2 lg:col-span-2">
                 <div class="p-4">
-                    <h2 class="text-lg font-semibold mb-4">Latest Products</h2>
-                    <div>
-                        <div class="flex">
-                            <div class="">
-                                <img src="../../../assets/images/Career_Yojna.png" style="width: 100px;" />
-                            </div>
-                            <div class="flex pl-4 flex-col justify-between">
-                                <div class=" cursor-pointer changing font-medium">
-                                    <p style="font-size: 1rem;">IBM Off Campus Placement Jobs in India for Freshers 2024</p>
-                                </div>
-                                <div class="flex">
-                                    <span class="font-light">
-                                        20 March , 2024
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                    <div
+                        class="text-center mb-5"
+                        style="box-shadow:  rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px">
+                        <h2 class="text-lg font-semibold mb-4 border-2 border-fuchsia-400">Latest Products</h2>
                     </div>
+
+                    <div *ngFor="let job of top5Jobs" (click)="navigateToJob(job.id)" class="cursor-pointer">
+                        <div class="flex mb-4" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
+                          <div class="">
+                            <img [src]="job.img_url" style="width: 100px; height: 100px;" />
+                          </div>
+                          <div class="flex pl-4 p-4 flex-col justify-between">
+                            <div class="cursor-pointer changing font-medium">
+                              <p style="font-size: 1rem;">{{ job.title }}</p>
+                            </div>
+                            <div class="flex">
+                              <span class="font-light">{{ job.post_date | date:'dd MMM, yyyy' }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
                 </div>
             </div>
         </div>

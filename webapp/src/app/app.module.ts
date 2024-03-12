@@ -42,6 +42,8 @@ import { JobsTableComponent } from './components/jobs-table/jobs-table.component
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
+import { JobDatailComponent } from './page/job-datail/job-datail.component';
+
 
 @NgModule({
   declarations: [
@@ -63,6 +65,7 @@ import {MatTableModule} from '@angular/material/table';
     UploadBannerComponent,
     UploadJobComponent,
     JobsTableComponent,
+    JobDatailComponent,
   ],
   imports: [
     BrowserModule,

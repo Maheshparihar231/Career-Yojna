@@ -14,7 +14,7 @@ import { DataService } from 'src/app/service/data.service';
 })
 export class JobsTableComponent implements OnInit, AfterViewInit {
 
-  displayedColumns: string[] = ['company_name', 'apply_link', 'post_date', 'role'];
+  displayedColumns: string[] = ['company_name', 'apply_link', 'post_date', 'role','delete'];
   dataSource: MatTableDataSource<Job>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -36,7 +36,7 @@ export class JobsTableComponent implements OnInit, AfterViewInit {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
@@ -79,8 +79,9 @@ export class JobsTableComponent implements OnInit, AfterViewInit {
   }
 
   deleteJob(job: Job) {
-    if (window.confirm('Are you sure?' + job.id)) {
+    if (window.confirm('Are you sure? ' + job.company_name)) {
       this.dataService.deleteJob(job);
+      this.getAllJobs();
     }
   }
 
