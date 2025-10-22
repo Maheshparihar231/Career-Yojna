@@ -20,4 +20,6 @@ export interface Job {
     responsibilities: string[];
     requirements: string[];
     deadline: Date;
+    views?: number; // Number of times the job has been viewed
+    last_viewed?: Date; // Last time the job was viewed
 }

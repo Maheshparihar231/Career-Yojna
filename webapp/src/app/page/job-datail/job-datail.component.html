@@ -1,46 +1,140 @@
-<div class="job-details p-5 justify-center items-center">
-    <div class="pt-4 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
-       
-
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <div class="col-span-3 mt-5 mb-4">
-                <div class="mb-5">
-                    <span class="block xl:inline text-4xl">{{job?.title}}</span>
-                </div>
-                <div class="image flex justify-center items-center">
-                    <img [src]="job?.img_url" class="object-cover" style="width: 600px; height: 300px;"/>
-                </div>
-                <div class="mt-3 flex">
-                    <span>Posted by : Career Yojna - </span>
-                    <span class="font-light">{{ job?.post_date| date:'dd MMM, yyyy' }}</span>
-                </div>
-                <div class="mt-6">
-                    <p class="font-medium">{{job?.description}}</p>
+<div class="job-details min-h-screen bg-neutral-50">
+    <!-- Breadcrumb -->
+    <nav class="bg-white shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center">
+                <button onclick="history.back()" 
+                        class="text-neutral-600 hover:text-primary-600 transition-colors p-2 rounded-full hover:bg-primary-50">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <div class="ml-4 text-sm text-neutral-600">
+                    <span class="hover:text-primary-600 cursor-pointer transition-colors">Jobs</span>
+                    <mat-icon class="text-sm align-middle mx-1">chevron_right</mat-icon>
+                    <span class="text-primary-600 font-medium">{{job?.title}}</span>
                 </div>
             </div>
-            <div class="col-span-1 lg:ml-6 lg:col-span-2">
-                <p class="text-2xl">Job highlights</p>
-                <hr/>
-                <div class="mb-3">
-                    <div class="font-medium p-3 flex items-center" style="font-size: 1rem;">
-                        <span>{{job?.role}}</span>
-                    </div>
-                    <div class="font-medium p-3 flex items-center" style="font-size: 1rem;">
-                        <mat-icon> location_on</mat-icon>
-                        <span>{{job?.location}}</span>
-                    </div>
-                    <div class="font-medium p-3 flex items-center" style="font-size: 1rem;">
-                        <span>{{job?.job_type}}</span>
+        </div>
+    </nav>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Job Header -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border border-neutral-100 hover:shadow-xl transition-shadow duration-300 mb-6">
+                    <div class="flex items-start gap-6">
+                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border">
+                            <img [src]="job?.img_url || defaultImageUrl" 
+                                 [alt]="job?.company_name + ' logo'"
+                                 class="w-full h-full object-contain"/>
+                        </div>
+                        <div class="flex-grow">
+                            <h1 class="text-2xl font-bold text-neutral-900 mb-2">{{job?.title}}</h1>
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="text-lg text-neutral-700">{{job?.company_name}}</span>
+                                <span class="text-sm text-neutral-500">
+                                    <mat-icon class="text-sm align-middle">schedule</mat-icon>
+                                    Posted {{ job?.post_date | date:'dd MMM, yyyy' }}
+                                </span>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm"
+                                      [ngClass]="{
+                                        'bg-blue-50 text-blue-700': job?.job_type === 'Full-time',
+                                        'bg-green-50 text-green-700': job?.job_type === 'Part-time',
+                                        'bg-purple-50 text-purple-700': job?.job_type === 'Contract'
+                                      }">
+                                    <mat-icon class="text-sm mr-1">work</mat-icon>
+                                    {{job?.job_type}}
+                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-700">
+                                    <mat-icon class="text-sm mr-1">location_on</mat-icon>
+                                    {{job?.location}}
+                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-50 text-green-700">
+                                    <mat-icon class="text-sm mr-1">payments</mat-icon>
+                                    ₹{{job?.salary | number}}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="flex justify-center items-center">
-                    <button style="width: 100%; background-color: #a92eb4; color: white;" mat-raised-button><a [href]="job?.apply_link" target="_blank">Apply</a></button>
+                <!-- Job Description -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                    <h2 class="text-lg font-semibold mb-4">About the Role</h2>
+                    <p class="text-neutral-700 whitespace-pre-line mb-6">{{job?.description}}</p>
+                    <!-- Requirements -->
+                    <div class="mb-6" *ngIf="job?.requirements?.length">
+                        <h3 class="text-lg font-semibold mb-3">Requirements</h3>
+                        <ul class="list-disc list-inside space-y-2 text-neutral-700">
+                            <li *ngFor="let req of job?.requirements">{{req}}</li>
+                        </ul>
+                    </div>
+                    <!-- Responsibilities -->
+                    <div class="mb-6" *ngIf="job?.responsibilities?.length">
+                        <h3 class="text-lg font-semibold mb-3">Responsibilities</h3>
+                        <ul class="list-disc list-inside space-y-2 text-neutral-700">
+                            <li *ngFor="let resp of job?.responsibilities">{{resp}}</li>
+                        </ul>
+                    </div>
+                    <!-- Skills Required -->
+                    <div class="mb-6" *ngIf="job?.skills_required?.length">
+                        <h3 class="text-lg font-semibold mb-3">Required Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span *ngFor="let skill of job?.skills_required" 
+                                  class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                                {{skill}}
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Benefits -->
+                    <div *ngIf="job?.benefits?.length">
+                        <h3 class="text-lg font-semibold mb-3">Benefits</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div *ngFor="let benefit of job?.benefits" 
+                                 class="flex items-center gap-2 text-neutral-700">
+                                <mat-icon class="text-green-600">check_circle</mat-icon>
+                                {{benefit}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="justify-center items-center border mt-4 flex" style="height: 400px;">
-                    <p>ad space</p>
+                <!-- Company Description -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                    <h2 class="text-lg font-semibold mb-4">About {{job?.company_name}}</h2>
+                    <p class="text-neutral-700">
+                        {{job?.company_name}} is looking for a talented {{job?.role}} to join our team.
+                    </p>
+                </div>
+            </div>
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Quick Apply -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6 sticky top-6">
+                    <h2 class="text-lg font-semibold mb-4">Quick Apply</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 text-neutral-700">
+                            <mat-icon>business</mat-icon>
+                            <span>{{job?.department || 'All Departments'}}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-neutral-700">
+                            <mat-icon>work</mat-icon>
+                            <span>{{job?.experience || 'Experience Required'}}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-neutral-700">
+                            <mat-icon>school</mat-icon>
+                            <span>{{job?.qualification || 'Qualification Required'}}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-red-600">
+                            <mat-icon>event</mat-icon>
+                            <span>Deadline: {{job?.deadline | date:'dd MMM, yyyy'}}</span>
+                        </div>
+                        <a [href]="job?.apply_link" target="_blank" 
+                           class="w-full bg-primary-600 text-white rounded-lg py-3 px-4 text-center font-medium hover:bg-primary-700 transition-colors inline-block">
+                            Apply Now
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>

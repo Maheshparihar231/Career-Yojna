@@ -1,68 +1,208 @@
-<div class="search pt-4 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
-    <div class="justify-start flex right-0 items-center">
+<div class="search pt-8 pb-12 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb flex items-center space-x-2 mb-8">
         <span>
-            <a href="#">Home</a>
+            <a href="#" class="hover:underline transition-colors">Home</a>
         </span>
-        <mat-icon>keyboard_arrow_right</mat-icon>
-        <span>
+        <mat-icon class="text-neutral-400 text-sm">keyboard_arrow_right</mat-icon>
+        <span class="text-neutral-500">
             {{type}}
         </span>
-    </div>
+    </nav>
 
-    <div class="pt-5">
-        <h1>Off-Campus Job Openings</h1>
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <!-- Left column for product listings -->
+    <div class="space-y-8">
+        <!-- Page Title -->
+        <h1 class="text-heading-1 font-bold text-neutral-900 mb-8">Off-Campus Job Openings</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Left column for job listings -->
             <div class="col-span-3">
-                <div class="p-4">
-                    <!-- cards line -->
-                    <div *ngFor="let job of jobList" (click)="navigateToJob(job.id)" class="cursor-pointer" >
-                        <div class="flex mb-4" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; height: 200px;">
-                            <div class="justify-center flex p-2 items-center">
-                                <img [src]="job.img_url" class="object-cover" style="height: 150px; width: 250px;"/>
+                <!-- Loading State -->
+                <div *ngIf="isLoading" class="space-y-6">
+                    <div *ngFor="let i of [1,2,3]" class="job-card flex animate-pulse">
+                        <div class="job-image-container bg-neutral-200"></div>
+                        <div class="flex flex-col justify-between flex-grow p-6 space-y-4">
+                            <div class="space-y-3">
+                                <div class="h-6 bg-neutral-200 rounded w-3/4"></div>
+                                <div class="h-4 bg-neutral-200 rounded w-full"></div>
+                                <div class="h-4 bg-neutral-200 rounded w-2/3"></div>
                             </div>
-                            <div class="flex pl-4 p-3 flex-col justify-between">
-                                <div class=" cursor-pointer changing">
-                                    <p style="font-size: 1.5rem;" class="text-xl">{{ job.title }}</p>
-                                    <p style="font-size: 1rem" class="text-gray-700">{{ job.mini_description }}</p>
+                            <div class="flex items-center space-x-4">
+                                <div class="h-4 bg-neutral-200 rounded w-1/4"></div>
+                                <div class="h-4 bg-neutral-200 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div *ngIf="error" class="p-4 rounded-lg bg-red-50 text-red-600">
+                    {{ error }}
+                    <button (click)="getAllJobs()" 
+                            class="mt-4 px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors">
+                        Retry Loading
+                    </button>
+                </div>
+
+                <!-- No Jobs State -->
+                <div *ngIf="!isLoading && !error && jobList.length === 0" 
+                     class="p-4 rounded-lg bg-blue-50 text-blue-600">
+                    No jobs available at the moment. Please check back later.
+                </div>
+
+                <!-- Job Cards -->
+                <div class="space-y-4" *ngIf="!isLoading && jobList.length > 0">
+                    <div *ngFor="let job of jobList; trackBy: trackByJobId" 
+                         (click)="navigateToJob(job.id)"
+                         class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                        <div class="job-card p-6">
+                            <!-- Header Section -->
+                            <div class="flex items-start space-x-4">
+                                <!-- Company Logo -->
+                                <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img [src]="job.img_url" 
+                                         class="w-full h-full object-cover" 
+                                         [alt]="job.company_name + ' logo'"
+                                         (error)="job.img_url = defaultImageUrl"
+                                         loading="lazy"/>
                                 </div>
-                                <div class="flex">
-                                    <span class="mr-3">
-                                        <a class="font-bold" href="">{{ job.company_name }}</a>
-                                    </span>
-                                    <span class="font-light">{{ job.post_date | date:'dd MMM, yyyy' }}</span>
+                                
+                                <!-- Main Content -->
+                                <div class="flex-grow">
+                                    <!-- Title and Company Section -->
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h2 class="text-lg font-semibold text-neutral-900 mb-1">
+                                                {{ job.title }}
+                                            </h2>
+                                            <a class="text-sm text-neutral-600 block mb-2">
+                                                {{ job.company_name }}
+                                            </a>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="views-count flex items-center text-sm text-neutral-500">
+                                                <mat-icon class="text-base mr-1">visibility</mat-icon>
+                                                {{ job.views || 0 }}
+                                            </span>
+                                            <span class="text-sm text-neutral-400">
+                                                {{ job.post_date | date:'dd MMM, yyyy' }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Job Description -->
+                                    <p class="text-sm text-neutral-600 mb-4">{{ job.mini_description }}</p>
+
+                                    <!-- Job Details -->
+                                    <div class="flex flex-wrap gap-3 items-center">
+                                        <span class="px-3 py-1 text-sm font-medium rounded-full"
+                                              [ngClass]="{
+                                                'bg-blue-50 text-blue-600': job.job_type === 'Full-time',
+                                                'bg-green-50 text-green-600': job.job_type === 'Part-time',
+                                                'bg-emerald-50 text-emerald-600': job.job_type === 'Remote'
+                                              }">
+                                            {{ job.job_type }}
+                                        </span>
+                                        
+                                        <span class="flex items-center text-sm text-neutral-600">
+                                            <mat-icon class="text-base mr-1">location_on</mat-icon>
+                                            {{ job.location || 'Remote' }}
+                                        </span>
+                                        
+                                        <span class="flex items-center text-sm text-neutral-600">
+                                            <mat-icon class="text-base mr-1">work</mat-icon>
+                                            {{ job.experience }}
+                                        </span>
+                                        
+                                        <span class="flex items-center text-sm text-green-600 ml-auto">
+                                            <mat-icon class="text-base mr-1">payments</mat-icon>
+                                            ₹{{ job.salary | number }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Right column for latest products -->
-            <div class="col-span-2 lg:col-span-2">
-                <div class="p-4">
-                    <div
-                        class="text-center mb-5"
-                        style="box-shadow:  rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px">
-                        <h2 class="text-lg font-semibold mb-4 border-2 border-fuchsia-400">Latest Jobs</h2>
+            <!-- Right column for latest jobs -->
+            <div class="col-span-2">
+                <div class="p-6">
+                    <div class="latest-jobs-header text-center mb-8">
+                        <h2 class="text-heading-2 font-bold text-neutral-900">Latest Jobs</h2>
                     </div>
 
-                    <div *ngFor="let job of top5Jobs" (click)="navigateToJob(job.id)" class="cursor-pointer">
-                        <div class="flex mb-4" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
-                          <div class="">
-                            <img [src]="job.img_url" style="width: 100px; height: 100px;" />
-                          </div>
-                          <div class="flex pl-4 p-4 flex-col justify-between">
-                            <div class="cursor-pointer changing font-medium">
-                              <p style="font-size: 1rem;">{{ job.title }}</p>
+                    <!-- Loading State for Top Jobs -->
+                    <div *ngIf="isLoading" class="space-y-4">
+                        <div *ngFor="let i of [1,2,3,4,5]" 
+                             class="bg-white rounded-xl p-4 animate-pulse border border-neutral-100">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-14 h-14 bg-neutral-100 rounded-lg"></div>
+                                <div class="flex-grow space-y-3">
+                                    <div class="h-5 bg-neutral-100 rounded w-2/3"></div>
+                                    <div class="h-4 bg-neutral-100 rounded w-1/2"></div>
+                                </div>
                             </div>
-                            <div class="flex">
-                              <span class="font-light">{{ job.post_date | date:'dd MMM, yyyy' }}</span>
-                            </div>
-                          </div>
                         </div>
-                      </div>
+                    </div>
+
+                    <!-- Top Jobs List -->
+                    <div class="space-y-4">
+                        <div *ngFor="let job of top5Jobs" 
+                             (click)="navigateToJob(job.id)" 
+                             class="group relative bg-white rounded-xl p-4 hover:shadow-lg transition-all duration-300 cursor-pointer border border-neutral-100">
+                            
+                            <!-- New Label if job is recent -->
+                            <div *ngIf="isNewJob(job.post_date)" 
+                                 class="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                New
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="flex items-start">
+                                <!-- Company Logo with Background -->
+                                <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-neutral-50 border border-neutral-100 p-2">
+                                    <img [src]="job.img_url" 
+                                         class="w-full h-full object-contain"
+                                         [alt]="job.company_name + ' logo'"
+                                         (error)="job.img_url = defaultImageUrl"
+                                         loading="lazy" />
+                                </div>
+
+                                <!-- Job Details -->
+                                <div class="flex-grow ml-4">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                                                {{ job.title }}
+                                            </h3>
+                                            <p class="text-sm text-neutral-600 mb-2">{{ job.company_name }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Job Highlights -->
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span *ngIf="job.job_type" 
+                                              class="text-xs px-2 py-1 rounded-full"
+                                              [ngClass]="{
+                                                'bg-blue-50 text-blue-700': job.job_type === 'Full-time',
+                                                'bg-green-50 text-green-700': job.job_type === 'Part-time',
+                                                'bg-purple-50 text-purple-700': job.job_type === 'Contract'
+                                              }">
+                                            {{ job.job_type }}
+                                        </span>
+                                        <span class="text-xs text-neutral-500">
+                                            Posted {{ job.post_date | date:'dd MMM' }}
+                                        </span>
+                                        <span *ngIf="job.salary" class="text-xs text-green-600 font-medium ml-auto">
+                                            ₹{{ job.salary | number }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                       
                 </div>
             </div>

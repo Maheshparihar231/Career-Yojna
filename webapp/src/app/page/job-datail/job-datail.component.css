@@ -1,3 +1,128 @@
-.job-details{
+.job-details {
     min-height: 50vh;
+    background-color: #fafafa;
+}
+
+.card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #9333ea;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #7e22ce;
+}
+
+.btn-outline {
+    border: 2px solid #9333ea;
+    color: #9333ea;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: #faf5ff;
+}
+
+.tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tag-primary {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+}
+
+.tag-neutral {
+    background-color: #f5f5f5;
+    color: #404040;
+}
+
+.card-highlight {
+    border: 1px solid #f3e8ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-highlight:hover {
+    border-color: #e9d5ff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+/* Animation classes */
+.hover-raise {
+    transition: all 0.3s ease;
+}
+
+.hover-raise:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    @apply bg-white rounded-xl shadow hover:shadow-lg transition-all duration-300;
+}
+
+.btn-primary {
+    @apply bg-primary-600 text-white rounded-lg px-6 py-2.5 hover:bg-primary-700 transition-colors;
+}
+
+.btn-outline {
+    @apply border-2 border-primary-600 text-primary-600 rounded-lg px-6 py-2.5 hover:bg-primary-50 transition-colors;
+}
+
+.tag {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.tag-primary {
+    @apply bg-primary-100 text-primary-700;
+}
+
+.tag-neutral {
+    @apply bg-neutral-100 text-neutral-700;
+}
+
+.heading {
+    @apply text-lg font-semibold text-neutral-900;
+}
+
+.subheading {
+    @apply text-sm font-medium text-neutral-600;
+}
+
+.icon-button {
+    @apply p-2 rounded-full hover:bg-primary-50 hover:text-primary-600 transition-colors;
+}
+
+/* Animations */
+.hover-raise {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* Card variations */
+.card-highlight {
+    @apply border border-primary-100 shadow-md hover:border-primary-200;
+}
+
+.card-subtle {
+    @apply border border-neutral-100 shadow-sm hover:shadow;
 }

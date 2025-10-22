@@ -11,6 +11,7 @@ import { DataService } from 'src/app/service/data.service';
 export class JobDatailComponent implements OnInit{
   jobId: string = '';
   job : Job | null = null;
+  defaultImageUrl: string = 'assets/images/default-company.png';
 
   constructor(private route : ActivatedRoute,private data : DataService){}
   
