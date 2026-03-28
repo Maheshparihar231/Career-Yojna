@@ -1,0 +1,161 @@
+/* Status badges */
+.status-published {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-draft {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+td, th {
+  padding: 12px 8px !important;
+  word-break: break-word;
+}
+
+.mat-column-actions {
+  min-width: 120px;
+  text-align: center;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f9fafb;
+}
+
+/* Header styling */
+.mat-mdc-header-row {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+/* Action buttons */
+.mat-icon-button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+/* Category badges */
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* Views and likes styling */
+.views-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Title truncation */
+.title-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Summary text */
+.summary-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Horizontal scroll wrapper */
+.overflow-x-auto {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.overflow-x-auto table {
+  min-width: 600px;
+}
+
+/* Responsive design - Tablet */
+@media (max-width: 768px) {
+  .mat-mdc-form-field {
+    font-size: 12px;
+  }
+  
+  td, th {
+    padding: 8px 6px !important;
+    font-size: 13px;
+  }
+  
+  .mat-column-actions {
+    min-width: 100px;
+  }
+  
+  .mat-icon-button {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .overflow-x-auto table {
+    min-width: 550px;
+  }
+}
+
+/* Responsive design - Mobile */
+@media (max-width: 480px) {
+  td, th {
+    padding: 6px 4px !important;
+    font-size: 11px;
+  }
+  
+  .mat-icon-button {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    min-width: 28px;
+    min-height: 28px;
+    margin: 0 2px;
+  }
+  
+  .mat-mdc-form-field {
+    font-size: 11px;
+  }
+  
+  .overflow-x-auto table {
+    min-width: 500px;
+  }
+}
+
+/* Empty state */
+.mat-no-data-row {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Search bar enhancements */
+.search-bar {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}

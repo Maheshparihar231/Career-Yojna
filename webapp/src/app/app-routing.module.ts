@@ -8,21 +8,24 @@ import { SearchComponent } from './page/search/search.component';
 import { ProfileComponent } from './page/profile/profile.component';
 import { DataComponent } from './page/data/data.component';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
+import { BlogsComponent } from './components/blogs/blogs.component';
+
 
 const routes: Routes = [
   {path:"",pathMatch:"full",redirectTo: "home" },
   { path: "home", component: HomepageComponent },
-  {
-    path: "auth", component: AuthenticationComponent, children: [
-      { path: "", pathMatch: "full", redirectTo: "login" },
-      { path: "login", component: LoginComponent },
-      { path: "signup", component: SignupComponent },
-    ]
-  },
+  // {
+  //   path: "auth", component: AuthenticationComponent, children: [
+  //     { path: "", pathMatch: "full", redirectTo: "login" },
+  //     { path: "login", component: LoginComponent },
+  //     { path: "signup", component: SignupComponent },
+  //   ]
+  // },
   { path: "search", component: SearchComponent },
-  { path: "profile", component: ProfileComponent },
-  { path: "manage", component: DataComponent },
+  // { path: "profile", component: ProfileComponent },
+  // { path: "manage", component: DataComponent },
   { path: "job/:id", component: JobDatailComponent },
+  { path: "blogs", component: BlogsComponent },
 ];
 
 @NgModule({

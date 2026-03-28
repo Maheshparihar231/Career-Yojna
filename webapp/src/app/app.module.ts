@@ -30,7 +30,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.component';
 import { DataComponent } from './page/data/data.component';
-import {AngularFireModule} from '@angular/fire/compat'
+import {AngularFireModule} from '@angular/fire/compat';
+import {AngularFireStorageModule} from '@angular/fire/compat/storage';
+import {AngularFireAuthModule} from '@angular/fire/compat/auth';
 import { environment } from './environment/environment';
 import { UploadBannerComponent } from './components/pop-up/upload-banner/upload-banner.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
@@ -43,7 +45,14 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
-
+import { BlogsComponent } from './components/blogs/blogs.component';
+import { BlogManagementComponent } from './components/blog-management/blog-management.component';
+import { BlogsTableComponent } from './components/blogs-table/blogs-table.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { AdPlaceholderComponent } from './components/ad-placeholder/ad-placeholder.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +75,10 @@ import { JobDatailComponent } from './page/job-datail/job-datail.component';
     UploadJobComponent,
     JobsTableComponent,
     JobDatailComponent,
+    BlogsComponent,
+    BlogManagementComponent,
+    BlogsTableComponent,
+    AdPlaceholderComponent
   ],
   imports: [
     BrowserModule,
@@ -92,7 +105,13 @@ import { JobDatailComponent } from './page/job-datail/job-datail.component';
     ReactiveFormsModule,
     MatDividerModule,
     MatGridListModule,
+    MatSlideToggleModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule,
+    AngularFireAuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,125 @@
+<div class="container">
+    <h2>{{ isEditing ? 'Edit Blog' : 'Create New Blog' }}</h2>
+
+    <div class="form-container">
+        <form [formGroup]="blogForm" (ngSubmit)="onSubmit()">
+            <!-- Basic Information -->
+            <div class="form-row">
+                <mat-form-field class="form-field">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="title" placeholder="Enter blog title">
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field class="form-field">
+                    <mat-label>Summary</mat-label>
+                    <textarea matInput formControlName="summary" rows="3" placeholder="Enter blog summary"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field class="form-column">
+                    <mat-label>Author</mat-label>
+                    <input matInput formControlName="author" placeholder="Enter author name">
+                </mat-form-field>
+
+                <mat-form-field class="form-column">
+                    <mat-label>Category</mat-label>
+                    <mat-select formControlName="category">
+                        <mat-option value="technology">Technology</mat-option>
+                        <mat-option value="career">Career</mat-option>
+                        <mat-option value="education">Education</mat-option>
+                        <mat-option value="industry">Industry</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field class="form-column">
+                    <mat-label>Tags</mat-label>
+                    <input matInput formControlName="tags" placeholder="Enter tags (comma-separated)">
+                </mat-form-field>
+
+                <mat-form-field class="form-column">
+                    <mat-label>Read Time</mat-label>
+                    <input matInput formControlName="readTime" placeholder="e.g., 5 min read">
+                </mat-form-field>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-row">
+                <div class="form-column">
+                    <button type="button" mat-raised-button (click)="fileInput.click()">
+                        <mat-icon>cloud_upload</mat-icon>
+                        Upload Featured Image
+                    </button>
+                    <input #fileInput type="file" (change)="uploadImage($event)" style="display: none" accept="image/*">
+                    
+                    <div *ngIf="blogForm.get('imageUrl')?.value" class="preview-image">
+                        <img [src]="blogForm.get('imageUrl')?.value" alt="Blog preview">
+                        <div class="image-status mt-2">
+                            <mat-icon class="text-success">check_circle</mat-icon>
+                            <span class="ml-2">Image uploaded successfully</span>
+                        </div>
+                    </div>
+                </div>
+
+                <mat-slide-toggle class="form-column" formControlName="featured">
+                    Featured Post
+                </mat-slide-toggle>
+            </div>
+
+            <!-- Content Editor -->
+            <div class="form-row">
+                <mat-form-field class="form-field">
+                    <mat-label>Content</mat-label>
+                    <textarea matInput formControlName="content" rows="10" placeholder="Write your blog content here"></textarea>
+                </mat-form-field>
+            </div>
+
+            <!-- SEO Section -->
+            <div formGroupName="seoMetadata" class="seo-section">
+                <h3>SEO Metadata</h3>
+                <div class="form-row">
+                    <mat-form-field class="form-column">
+                        <mat-label>Meta Title</mat-label>
+                        <input matInput formControlName="metaTitle" placeholder="Enter SEO title">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-column">
+                        <mat-label>Meta Keywords</mat-label>
+                        <input matInput formControlName="keywords" placeholder="Enter keywords (comma-separated)">
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                    <mat-form-field class="form-field">
+                        <mat-label>Meta Description</mat-label>
+                        <textarea matInput formControlName="metaDescription" rows="3" placeholder="Enter meta description"></textarea>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="form-row">
+                <mat-form-field class="form-field">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="status">
+                        <mat-option value="draft">Draft</mat-option>
+                        <mat-option value="published">Published</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button mat-button type="button" (click)="resetForm()">Cancel</button>
+                <button mat-raised-button color="primary" type="submit">
+                    {{ isEditing ? 'Update' : 'Create' }} Blog
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

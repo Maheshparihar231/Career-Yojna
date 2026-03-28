@@ -1,106 +1,659 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Job } from '../data/jobs';
-import { Observable, map } from 'rxjs';
+import {
+  Observable,
+  map,
+  from,
+  shareReplay,
+  debounceTime,
+  distinctUntilChanged,
+  mergeMap,
+  Subject,
+  BehaviorSubject,
+  retry,
+  catchError,
+  of,
+  tap,
+  finalize
+} from 'rxjs';
+import firebase from 'firebase/compat/app';
+
+export interface BlogPost {
+  id?: string;
+  title: string;
+  date: Date;
+  category: string;
+  image: string;
+  author: string;
+  readTime: string;
+  summary: string;
+  content: string;
+  views?: number;
+  likes?: number;
+  tags?: string[];
+  isPublished?: boolean;
+  lastModified?: Date;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  private readonly JOBS_COLLECTION = '/Jobs';
+  private readonly BLOGS_COLLECTION = '/Blogs';
+  private readonly RETRY_CONFIG = { count: 3, delay: 1000 };
 
-  constructor(private afs : AngularFirestore) { }
+  // Caching & State Management
+  private allJobs$!: Observable<Job[]>;
+  private allBlogs$!: Observable<BlogPost[]>;
+  private jobViewUpdates$ = new Subject<string>();
+  private blogViewUpdates$ = new Subject<string>();
+  private blogLikeUpdates$ = new Subject<string>();
+
+  // Loading & Error States
+  public isLoadingJobs$ = new BehaviorSubject<boolean>(false);
+  public isLoadingBlogs$ = new BehaviorSubject<boolean>(false);
+  public jobsError$ = new BehaviorSubject<string | null>(null);
+  public blogsError$ = new BehaviorSubject<string | null>(null);
+
+  constructor(private afs: AngularFirestore) {
+    this.initializeCaching();
+    this.initializeViewTracking();
+  }
 
   isInitialized(): boolean {
     return !!this.afs;
   }
 
-  addData(job : Job){
-    job.id = this.afs.createId();
-    return this.afs.collection('/Jobs').add(job);
+  /**
+   * Initialize caching and view tracking streams
+   */
+  private initializeCaching(): void {
+    // Cache jobs with shareReplay
+    this.allJobs$ = this.createJobsSource().pipe(
+      tap(() => this.isLoadingJobs$.next(false)),
+      catchError(error => {
+        console.error('Jobs fetch error:', error);
+        this.jobsError$.next(error.message || 'Failed to load jobs');
+        this.isLoadingJobs$.next(false);
+        return of([]);
+      }),
+      shareReplay(1)
+    );
 
+    // Cache blogs with shareReplay
+    this.allBlogs$ = this.createBlogsSource().pipe(
+      tap(() => this.isLoadingBlogs$.next(false)),
+      catchError(error => {
+        console.error('Blogs fetch error:', error);
+        this.blogsError$.next(error.message || 'Failed to load blogs');
+        this.isLoadingBlogs$.next(false);
+        return of([]);
+      }),
+      shareReplay(1)
+    );
   }
 
-  getAllJobs(): Observable<Job[]> {
-    console.log('DataService: Starting jobs fetch...');
-    return this.afs.collection('/Jobs').snapshotChanges().pipe(
-      map(snapshots => {
-        console.log('DataService: Raw data count:', snapshots?.length || 0);
-        
-        const jobs = snapshots.map(doc => {
-          const data = doc.payload.doc.data() as Record<string, any>;
-          const id = doc.payload.doc.id;
-          
-          return {
-            id,
-            title: data['title'] || 'Untitled Position',
-            company_name: data['company_name'] || 'Company Name Not Available',
-            mini_description: data['mini_description'] || 'No description available',
-            post_date: data['post_date'] ? new Date(data['post_date']) : new Date(),
-            img_url: data['img_url'] || 'assets/images/default-company.png',
-            description: data['description'] || '',
-            apply_link: data['apply_link'] || '',
-            role: data['role'] || '',
-            department: data['department'] || '',
-            remote: data['remote'] || '',
-            location: data['location'] || '',
-            job_type: data['job_type'] || '',
-            salary: data['salary'] || 0,
-            experience: data['experience'] || '',
-            qualification: data['qualification'] || '',
-            skills_required: Array.isArray(data['skills_required']) ? data['skills_required'] : [],
-            benefits: Array.isArray(data['benefits']) ? data['benefits'] : [],
-            responsibilities: Array.isArray(data['responsibilities']) ? data['responsibilities'] : [],
-            requirements: Array.isArray(data['requirements']) ? data['requirements'] : [],
-            deadline: data['deadline'] ? new Date(data['deadline']) : new Date()
-          } as Job;
-        });
-        
-        if (jobs.length === 0) {
-          console.log('DataService: No jobs found in snapshot');
-        } else {
-          console.log('DataService: Processed jobs:', jobs.length, 'First job:', jobs[0]);
-        }
-        return jobs;
+  /**
+   * Initialize debounced view and like tracking
+   */
+  private initializeViewTracking(): void {
+    // Debounce job view updates - group within 5s window
+    this.jobViewUpdates$
+      .pipe(
+        debounceTime(5000),
+        distinctUntilChanged(),
+        mergeMap(jobId => this.performJobViewUpdate(jobId))
+      )
+      .subscribe();
+
+    // Debounce blog view updates
+    this.blogViewUpdates$
+      .pipe(
+        debounceTime(5000),
+        distinctUntilChanged(),
+        mergeMap(blogId => this.performBlogViewUpdate(blogId))
+      )
+      .subscribe();
+
+    // Debounce blog like updates - group within 2s window
+    this.blogLikeUpdates$
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged(),
+        mergeMap(blogId => this.performBlogLikeUpdate(blogId))
+      )
+      .subscribe();
+  }
+
+  // ===================== JOBS CRUD OPERATIONS =====================
+
+  /**
+   * Create a new job posting
+   */
+  addJob(job: Job): Observable<any> {
+    job.id = this.afs.createId();
+    this.isLoadingJobs$.next(true);
+    
+    return from(
+      this.afs.collection(this.JOBS_COLLECTION).add({
+        ...job,
+        post_date: new Date(),
+        views: 0
+      })
+    ).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error adding job:', error);
+        this.jobsError$.next(error.message || 'Failed to add job');
+        throw error;
+      }),
+      finalize(() => this.isLoadingJobs$.next(false))
+    );
+  }
+
+  /**
+   * Update an existing job
+   */
+  updateJob(job: Job): Observable<void> {
+    if (!job.id) throw new Error('Job ID is required for update');
+    
+    return from(
+      this.afs.doc(`${this.JOBS_COLLECTION}/${job.id}`).update({
+        ...job,
+        lastModified: new Date()
+      })
+    ).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error updating job:', error);
+        this.jobsError$.next(error.message || 'Failed to update job');
+        throw error;
       })
     );
   }
 
-  deleteJob(job : Job){
-    return this.afs.doc('/Jobs/'+job.id).delete();
-
-  }
-
-  getJobById(jobId: string) {
-    // First increment the view count
-    this.incrementJobViews(jobId);
-    // Then return the job data
-    return this.afs.collection('/Jobs').doc(jobId).valueChanges();
-  }
-
-  updateJob(job: Job) {
-    this.deleteJob(job);
-    this.addData(job);
+  /**
+   * Delete a job posting
+   */
+  deleteJob(job: Job): Observable<void> {
+    if (!job.id) throw new Error('Job ID is required for deletion');
+    
+    return from(this.afs.doc(`${this.JOBS_COLLECTION}/${job.id}`).delete()).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error deleting job:', error);
+        this.jobsError$.next(error.message || 'Failed to delete job');
+        throw error;
+      })
+    );
   }
 
   /**
-   * Increment the view count for a specific job
-   * Uses Firebase's atomic increment operation to ensure accuracy
+   * Get all jobs with caching
    */
-  private incrementJobViews(jobId: string) {
-    const jobRef = this.afs.collection('/Jobs').doc(jobId);
+  getAllJobs(): Observable<Job[]> {
+    this.isLoadingJobs$.next(true);
+    return this.allJobs$;
+  }
+
+  /**
+   * Get jobs with pagination support
+   */
+  getJobsPaginated(pageSize: number = 10, pageNumber: number = 0): Observable<Job[]> {
+    return this.getAllJobs().pipe(
+      map(jobs => {
+        const start = pageNumber * pageSize;
+        return jobs.slice(start, start + pageSize);
+      })
+    );
+  }
+
+  /**
+   * Get job by ID with view tracking
+   */
+  getJobById(jobId: string): Observable<Job | undefined> {
+    // Emit view update (debounced)
+    this.jobViewUpdates$.next(jobId);
     
-    jobRef.get().subscribe(doc => {
-      if (doc.exists) {
-        const data = doc.data() as Record<string, any>;
-        jobRef.update({
-          views: (data['views'] || 0) + 1,
-          last_viewed: new Date()
-        }).then(() => {
-          console.log('View count updated successfully');
-        }).catch(error => {
-          console.error('Error updating view count:', error);
+    return this.afs.collection(this.JOBS_COLLECTION).doc(jobId).valueChanges().pipe(
+      map(data => data ? this.transformJob(data as Record<string, any>) : undefined),
+      catchError(error => {
+        console.error('Error fetching job:', error);
+        return of(undefined);
+      })
+    );
+  }
+
+  /**
+   * Get trending jobs sorted by views
+   */
+  getTrendingJobs(limit: number = 5): Observable<Job[]> {
+    return this.getAllJobs().pipe(
+      map(jobs =>
+        jobs
+          .sort((a, b) => (b.views || 0) - (a.views || 0))
+          .slice(0, limit)
+      )
+    );
+  }
+
+  /**
+   * Search jobs by multiple criteria
+   */
+  searchJobs(query: string, filters?: {
+    jobType?: string;
+    location?: string;
+    minSalary?: number;
+  }): Observable<Job[]> {
+    const lowerQuery = query.toLowerCase();
+    
+    return this.getAllJobs().pipe(
+      map(jobs =>
+        jobs.filter(job => {
+          const matchesQuery =
+            job.title.toLowerCase().includes(lowerQuery) ||
+            job.company_name.toLowerCase().includes(lowerQuery) ||
+            job.mini_description.toLowerCase().includes(lowerQuery) ||
+            job.location.toLowerCase().includes(lowerQuery);
+
+          if (!matchesQuery) return false;
+
+          // Apply filters if provided
+          if (filters?.jobType && job.job_type !== filters.jobType) return false;
+          if (filters?.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
+          if (filters?.minSalary && (job.salary || 0) < filters.minSalary) return false;
+
+          return true;
+        })
+      )
+    );
+  }
+
+  /**
+   * Private: Create jobs data source
+   */
+  private createJobsSource(): Observable<Job[]> {
+    console.log('DataService: Fetching jobs from Firestore...');
+    this.isLoadingJobs$.next(true);
+    
+    return this.afs.collection('/Jobs').snapshotChanges().pipe(
+      map(snapshots => {
+        console.log('DataService: Raw data count:', snapshots?.length || 0);
+        
+        return snapshots.map(doc => {
+          const data = doc.payload.doc.data() as Record<string, any>;
+          const id = doc.payload.doc.id;
+          return this.transformJob(data, id);
         });
-      }
-    });
+      }),
+      retry(this.RETRY_CONFIG)
+    );
+  }
+
+  /**
+   * Private: Transform raw Firestore job data to typed Job
+   */
+  private transformJob(data: Record<string, any>, id?: string): Job {
+    return {
+      id: id || data['id'],
+      title: data['title'] || 'Untitled Position',
+      company_name: data['company_name'] || 'Company Name Not Available',
+      mini_description: data['mini_description'] || 'No description available',
+      post_date: data['post_date'] ? new Date(data['post_date']) : new Date(),
+      img_url: data['img_url'] || 'assets/images/default-company.png',
+      description: data['description'] || '',
+      apply_link: data['apply_link'] || '',
+      role: data['role'] || '',
+      department: data['department'] || '',
+      remote: data['remote'] || '',
+      location: data['location'] || '',
+      job_type: data['job_type'] || '',
+      salary: data['salary'] || 0,
+      experience: data['experience'] || '0',
+      qualification: data['qualification'] || '',
+      skills_required: Array.isArray(data['skills_required']) ? data['skills_required'] : [],
+      benefits: Array.isArray(data['benefits']) ? data['benefits'] : [],
+      responsibilities: Array.isArray(data['responsibilities']) ? data['responsibilities'] : [],
+      requirements: Array.isArray(data['requirements']) ? data['requirements'] : [],
+      deadline: data['deadline'] ? new Date(data['deadline']) : new Date(),
+      views: data['views'] || 0
+    } as Job;
+  }
+
+  /**
+   * Private: Perform actual job view update (called after debounce)
+   */
+  private performJobViewUpdate(jobId: string): Observable<void> {
+    const jobRef = this.afs.collection(this.JOBS_COLLECTION).doc(jobId);
+    
+    return from(
+      jobRef.update({
+        views: firebase.firestore.FieldValue.increment(1),
+        last_viewed: new Date()
+      })
+    ).pipe(
+      catchError(error => {
+        console.error('Error updating job views:', error);
+        return of(void 0);
+      })
+    );
+  }
+
+  // ===================== BLOGS CRUD OPERATIONS =====================
+
+  /**
+   * Add new blog post
+   */
+  addBlog(blog: BlogPost): Observable<string> {
+    const id = this.afs.createId();
+    this.isLoadingBlogs$.next(true);
+    
+    return from(
+      this.afs.collection(this.BLOGS_COLLECTION).doc(id).set({
+        ...blog,
+        id,
+        date: new Date(),
+        views: 0,
+        likes: 0,
+        isPublished: true,
+        lastModified: new Date()
+      })
+    ).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error adding blog:', error);
+        this.blogsError$.next(error.message || 'Failed to add blog');
+        throw error;
+      }),
+      finalize(() => this.isLoadingBlogs$.next(false)),
+      map(() => id)
+    );
+  }
+
+  /**
+   * Update blog post
+   */
+  updateBlog(blog: BlogPost): Observable<void> {
+    if (!blog.id) throw new Error('Blog ID is required for update');
+    
+    return from(
+      this.afs.doc(`${this.BLOGS_COLLECTION}/${blog.id}`).update({
+        ...blog,
+        lastModified: new Date()
+      })
+    ).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error updating blog:', error);
+        this.blogsError$.next(error.message || 'Failed to update blog');
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Delete blog post
+   */
+  deleteBlog(blog: BlogPost): Observable<void> {
+    if (!blog.id) throw new Error('Blog ID is required for deletion');
+    
+    return from(this.afs.doc(`${this.BLOGS_COLLECTION}/${blog.id}`).delete()).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error deleting blog:', error);
+        this.blogsError$.next(error.message || 'Failed to delete blog');
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Get blog by ID with view tracking
+   */
+  getBlogById(blogId: string): Observable<BlogPost | undefined> {
+    // Emit view update (debounced)
+    this.blogViewUpdates$.next(blogId);
+    
+    return this.afs.collection(this.BLOGS_COLLECTION).doc(blogId).valueChanges().pipe(
+      map(data => data ? this.transformBlog(data as Record<string, any>, blogId) : undefined),
+      catchError(error => {
+        console.error('Error fetching blog:', error);
+        return of(undefined);
+      })
+    );
+  }
+
+  /**
+   * Get all blogs with caching
+   */
+  getAllBlogs(onlyPublished: boolean = true): Observable<BlogPost[]> {
+    this.isLoadingBlogs$.next(true);
+    
+    return this.allBlogs$.pipe(
+      map(blogs =>
+        onlyPublished ? blogs.filter(blog => blog.isPublished) : blogs
+      )
+    );
+  }
+
+  /**
+   * Get blogs with pagination
+   */
+  getBlogsPaginated(
+    pageSize: number = 10,
+    pageNumber: number = 0,
+    onlyPublished: boolean = true
+  ): Observable<BlogPost[]> {
+    return this.getAllBlogs(onlyPublished).pipe(
+      map(blogs => {
+        const start = pageNumber * pageSize;
+        return blogs.slice(start, start + pageSize);
+      })
+    );
+  }
+
+  /**
+   * Get blogs by category
+   */
+  getBlogsByCategory(category: string): Observable<BlogPost[]> {
+    return this.afs.collection(this.BLOGS_COLLECTION, ref =>
+      ref.where('category', '==', category).where('isPublished', '==', true)
+    )
+      .snapshotChanges()
+      .pipe(
+        map(snapshots =>
+          snapshots
+            .map(doc => {
+              const data = doc.payload.doc.data() as Record<string, any>;
+              const id = doc.payload.doc.id;
+              return this.transformBlog(data, id);
+            })
+            .sort((a, b) => b.date.getTime() - a.date.getTime())
+        ),
+        retry(this.RETRY_CONFIG),
+        catchError(error => {
+          console.error('Error fetching blogs by category:', error);
+          return of([]);
+        })
+      );
+  }
+
+  /**
+   * Like blog (debounced)
+   */
+  likeBlog(blogId: string): void {
+    this.blogLikeUpdates$.next(blogId);
+  }
+
+  /**
+   * Private: Perform actual blog like update (called after debounce)
+   */
+  private performBlogLikeUpdate(blogId: string): Observable<void> {
+    const blogRef = this.afs.collection(this.BLOGS_COLLECTION).doc(blogId);
+    
+    return from(
+      blogRef.update({
+        likes: firebase.firestore.FieldValue.increment(1)
+      })
+    ).pipe(
+      catchError(error => {
+        console.error('Error updating blog likes:', error);
+        return of(void 0);
+      })
+    );
+  }
+
+  /**
+   * Search blogs with full-text capability
+   */
+  searchBlogs(query: string, filters?: {
+    category?: string;
+    author?: string;
+  }): Observable<BlogPost[]> {
+    const lowerQuery = query.toLowerCase();
+    
+    return this.getAllBlogs().pipe(
+      map(blogs =>
+        blogs.filter(blog => {
+          const matchesQuery =
+            blog.title.toLowerCase().includes(lowerQuery) ||
+            blog.content.toLowerCase().includes(lowerQuery) ||
+            blog.tags?.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+            blog.category.toLowerCase().includes(lowerQuery) ||
+            blog.author.toLowerCase().includes(lowerQuery);
+
+          if (!matchesQuery) return false;
+
+          // Apply filters if provided
+          if (filters?.category && blog.category !== filters.category) return false;
+          if (filters?.author && blog.author !== filters.author) return false;
+
+          return true;
+        })
+      )
+    );
+  }
+
+  /**
+   * Get latest blogs sorted by date
+   */
+  getLatestBlogs(limit: number = 5): Observable<BlogPost[]> {
+    return this.getAllBlogs().pipe(
+      map(blogs =>
+        blogs
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .slice(0, limit)
+      )
+    );
+  }
+
+  /**
+   * Get trending blogs sorted by views
+   */
+  getTrendingBlogs(limit: number = 5): Observable<BlogPost[]> {
+    return this.getAllBlogs().pipe(
+      map(blogs =>
+        blogs
+          .sort((a, b) => (b.views || 0) - (a.views || 0))
+          .slice(0, limit)
+      )
+    );
+  }
+
+  /**
+   * Get related blogs by category
+   */
+  getRelatedBlogs(
+    category: string,
+    currentBlogId: string,
+    limit: number = 3
+  ): Observable<BlogPost[]> {
+    return this.getBlogsByCategory(category).pipe(
+      map(blogs =>
+        blogs
+          .filter(blog => blog.id !== currentBlogId)
+          .slice(0, limit)
+      )
+    );
+  }
+
+  /**
+   * Toggle blog publish status
+   */
+  toggleBlogPublishStatus(blogId: string, isPublished: boolean): Observable<void> {
+    return from(
+      this.afs.doc(`${this.BLOGS_COLLECTION}/${blogId}`).update({
+        isPublished,
+        lastModified: new Date()
+      })
+    ).pipe(
+      retry(this.RETRY_CONFIG),
+      catchError(error => {
+        console.error('Error toggling publish status:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Private: Create blogs data source
+   */
+  private createBlogsSource(): Observable<BlogPost[]> {
+    console.log('DataService: Fetching blogs from Firestore...');
+    this.isLoadingBlogs$.next(true);
+    
+    return this.afs.collection(this.BLOGS_COLLECTION).snapshotChanges().pipe(
+      map(snapshots =>
+        snapshots.map(doc => {
+          const data = doc.payload.doc.data() as Record<string, any>;
+          const id = doc.payload.doc.id;
+          return this.transformBlog(data, id);
+        })
+      ),
+      retry(this.RETRY_CONFIG)
+    );
+  }
+
+  /**
+   * Private: Transform raw Firestore blog data to typed BlogPost
+   */
+  private transformBlog(data: Record<string, any>, id?: string): BlogPost {
+    return {
+      id: id || data['id'],
+      title: data['title'] || 'Untitled',
+      date: data['date'] ? new Date((data['date'] as any).toDate?.() || data['date']) : new Date(),
+      category: data['category'] || 'General',
+      image: data['image'] || 'assets/images/default-blog.png',
+      author: data['author'] || 'Unknown',
+      readTime: data['readTime'] || '5 min read',
+      summary: data['summary'] || '',
+      content: data['content'] || '',
+      views: data['views'] || 0,
+      likes: data['likes'] || 0,
+      tags: Array.isArray(data['tags']) ? data['tags'] : [],
+      isPublished: data['isPublished'] ?? true,
+      lastModified: data['lastModified'] ? new Date((data['lastModified'] as any).toDate?.() || data['lastModified']) : new Date()
+    } as BlogPost;
+  }
+
+  /**
+   * Private: Perform actual blog view update (called after debounce)
+   */
+  private performBlogViewUpdate(blogId: string): Observable<void> {
+    const blogRef = this.afs.collection(this.BLOGS_COLLECTION).doc(blogId);
+    
+    return from(
+      blogRef.update({
+        views: firebase.firestore.FieldValue.increment(1),
+        lastViewed: new Date()
+      })
+    ).pipe(
+      catchError(error => {
+        console.error('Error updating blog views:', error);
+        return of(void 0);
+      })
+    );
   }
 }

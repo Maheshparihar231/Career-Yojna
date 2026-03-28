@@ -1,124 +1,122 @@
-<div class="search pt-8 pb-12 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
-    <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb flex items-center space-x-2 mb-8">
-        <span>
-            <a href="#" class="hover:underline transition-colors">Home</a>
-        </span>
-        <mat-icon class="text-neutral-400 text-sm">keyboard_arrow_right</mat-icon>
-        <span class="text-neutral-500">
-            {{type}}
-        </span>
-    </nav>
+<div class="search pb-20 app-container">
+    <!-- Modern Hero Header -->
+    <div class="relative mb-8 sm:mb-12 pt-6 sm:pt-8">
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb flex items-center space-x-2 mb-6 sm:mb-8 overflow-x-auto">
+            <a href="#" class="text-xs sm:text-sm text-neutral-600 hover:text-primary-600 transition-colors flex items-center whitespace-nowrap">
+                <mat-icon class="text-sm mr-1">home</mat-icon>
+                <span class="hidden sm:inline">Home</span>
+            </a>
+            <mat-icon class="text-neutral-300 text-sm hidden sm:inline">chevron_right</mat-icon>
+            <span class="text-xs sm:text-sm text-neutral-500 whitespace-nowrap">{{ type }}</span>
+        </nav>
 
-    <div class="space-y-8">
-        <!-- Page Title -->
-        <h1 class="text-heading-1 font-bold text-neutral-900 mb-8">Off-Campus Job Openings</h1>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <!-- Left column for job listings -->
-            <div class="col-span-3">
-                <!-- Loading State -->
-                <div *ngIf="isLoading" class="space-y-6">
-                    <div *ngFor="let i of [1,2,3]" class="job-card flex animate-pulse">
-                        <div class="job-image-container bg-neutral-200"></div>
-                        <div class="flex flex-col justify-between flex-grow p-6 space-y-4">
-                            <div class="space-y-3">
-                                <div class="h-6 bg-neutral-200 rounded w-3/4"></div>
-                                <div class="h-4 bg-neutral-200 rounded w-full"></div>
-                                <div class="h-4 bg-neutral-200 rounded w-2/3"></div>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="h-4 bg-neutral-200 rounded w-1/4"></div>
-                                <div class="h-4 bg-neutral-200 rounded w-1/4"></div>
-                            </div>
-                        </div>
+        <!-- Hero Section -->
+        <div
+            class="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary-50 via-transparent to-transparent border border-primary-100/50 p-6 sm:p-8 md:p-12">
+            <!-- Decorative elements -->
+            <div class="absolute -top-40 -right-40 w-60 sm:w-80 h-60 sm:h-80 bg-primary-100/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-40 sm:w-60 h-40 sm:h-60 bg-blue-100/10 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10">
+                <div class="inline-block mb-3 sm:mb-4">
+                    <span
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-primary-600 bg-primary-50 border border-primary-200">
+                        <mat-icon class="text-sm">trending_up</mat-icon>
+                        <span class="hidden sm:inline">{{ jobList.length || 0 }} Opportunities Available</span>
+                        <span class="sm:hidden">{{ jobList.length || 0 }} Jobs</span>
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-2 sm:mb-3 brand-heading">
+                    Off-Campus Job Openings
+                </h1>
+                <p class="text-sm sm:text-base md:text-lg text-neutral-600 max-w-2xl">
+                    <span class="hidden sm:inline">Find your perfect opportunity from {{ jobList.length || 0 }} carefully curated job listings</span>
+                    <span class="sm:hidden">Browse {{ jobList.length || 0 }} job opportunities</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Ad Banner - Header -->
+    <app-ad-placeholder placement="header" class="block mb-8"></app-ad-placeholder>
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8 items-start">
+        <!-- Left column for job listings -->
+        <div class="col-span-1 lg:col-span-3">
+            <!-- Filter & Sort Controls -->
+            <div class="mb-6 space-y-4">
+                <!-- Search Bar -->
+                <div class="flex-1 relative">
+                    <input
+                        type="text"
+                        placeholder="Search jobs by title, company..."
+                        [value]="searchQuery"
+                        (keyup)="onSearchChange($any($event.target).value)"
+                        class="w-full px-4 py-3 rounded-lg border border-neutral-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 text-sm sm:text-base transition-all" />
+                    <mat-icon class="absolute right-3 top-3 text-neutral-400 text-sm">search</mat-icon>
+                </div>
+
+                <!-- Sort & Page Size Controls -->
+                <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                    <div class="flex gap-2 text-xs">
+                        <span class="text-neutral-600">Sort by:</span>
+                        <button
+                            (click)="onSortChange('latest')"
+                            [class.font-bold]="sortBy === 'latest'"
+                            [class.text-primary-600]="sortBy === 'latest'"
+                            [class.text-neutral-500]="sortBy !== 'latest'"
+                            class="hover:text-primary-600 transition-colors">Latest</button>
+                        <button
+                            (click)="onSortChange('salary')"
+                            [class.font-bold]="sortBy === 'salary'"
+                            [class.text-primary-600]="sortBy === 'salary'"
+                            [class.text-neutral-500]="sortBy !== 'salary'"
+                            class="hover:text-primary-600 transition-colors">Salary High</button>
+                        <button
+                            (click)="onSortChange('views')"
+                            [class.font-bold]="sortBy === 'views'"
+                            [class.text-primary-600]="sortBy === 'views'"
+                            [class.text-neutral-500]="sortBy !== 'views'"
+                            class="hover:text-primary-600 transition-colors">Popular</button>
+                    </div>
+                    <div class="text-xs sm:text-sm text-neutral-600">
+                        Show: <select
+                            (change)="onPageSizeChange(+$any($event.target).value)"
+                            [value]="pageSize"
+                            class="border border-neutral-200 rounded px-2 py-1 text-xs">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
                     </div>
                 </div>
+            </div>
 
-                <!-- Error State -->
-                <div *ngIf="error" class="p-4 rounded-lg bg-red-50 text-red-600">
-                    {{ error }}
-                    <button (click)="getAllJobs()" 
-                            class="mt-4 px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors">
-                        Retry Loading
-                    </button>
-                </div>
-
-                <!-- No Jobs State -->
-                <div *ngIf="!isLoading && !error && jobList.length === 0" 
-                     class="p-4 rounded-lg bg-blue-50 text-blue-600">
-                    No jobs available at the moment. Please check back later.
-                </div>
-
-                <!-- Job Cards -->
-                <div class="space-y-4" *ngIf="!isLoading && jobList.length > 0">
-                    <div *ngFor="let job of jobList; trackBy: trackByJobId" 
-                         (click)="navigateToJob(job.id)"
-                         class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-                        <div class="job-card p-6">
-                            <!-- Header Section -->
-                            <div class="flex items-start space-x-4">
-                                <!-- Company Logo -->
-                                <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                                    <img [src]="job.img_url" 
-                                         class="w-full h-full object-cover" 
-                                         [alt]="job.company_name + ' logo'"
-                                         (error)="job.img_url = defaultImageUrl"
-                                         loading="lazy"/>
+            <!-- Results Info -->
+            <div class="mb-4 text-sm text-neutral-600">
+                Showing <span class="font-semibold">{{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, totalJobs) }}</span>
+                of <span class="font-semibold">{{ totalJobs }}</span> jobs
+            </div>
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="space-y-4">
+                <div *ngFor="let i of [1,2,3]" class="group">
+                    <div class="bg-white rounded-2xl p-6 animate-pulse border border-neutral-100">
+                        <div class="flex gap-6">
+                            <div class="w-20 h-20 rounded-xl bg-neutral-200 flex-shrink-0"></div>
+                            <div class="flex-1 space-y-4">
+                                <div class="space-y-2">
+                                    <div class="h-6 bg-neutral-200 rounded-lg w-3/4"></div>
+                                    <div class="h-4 bg-neutral-100 rounded w-1/3"></div>
                                 </div>
-                                
-                                <!-- Main Content -->
-                                <div class="flex-grow">
-                                    <!-- Title and Company Section -->
-                                    <div class="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h2 class="text-lg font-semibold text-neutral-900 mb-1">
-                                                {{ job.title }}
-                                            </h2>
-                                            <a class="text-sm text-neutral-600 block mb-2">
-                                                {{ job.company_name }}
-                                            </a>
-                                        </div>
-                                        <div class="flex items-center space-x-2">
-                                            <span class="views-count flex items-center text-sm text-neutral-500">
-                                                <mat-icon class="text-base mr-1">visibility</mat-icon>
-                                                {{ job.views || 0 }}
-                                            </span>
-                                            <span class="text-sm text-neutral-400">
-                                                {{ job.post_date | date:'dd MMM, yyyy' }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Job Description -->
-                                    <p class="text-sm text-neutral-600 mb-4">{{ job.mini_description }}</p>
-
-                                    <!-- Job Details -->
-                                    <div class="flex flex-wrap gap-3 items-center">
-                                        <span class="px-3 py-1 text-sm font-medium rounded-full"
-                                              [ngClass]="{
-                                                'bg-blue-50 text-blue-600': job.job_type === 'Full-time',
-                                                'bg-green-50 text-green-600': job.job_type === 'Part-time',
-                                                'bg-emerald-50 text-emerald-600': job.job_type === 'Remote'
-                                              }">
-                                            {{ job.job_type }}
-                                        </span>
-                                        
-                                        <span class="flex items-center text-sm text-neutral-600">
-                                            <mat-icon class="text-base mr-1">location_on</mat-icon>
-                                            {{ job.location || 'Remote' }}
-                                        </span>
-                                        
-                                        <span class="flex items-center text-sm text-neutral-600">
-                                            <mat-icon class="text-base mr-1">work</mat-icon>
-                                            {{ job.experience }}
-                                        </span>
-                                        
-                                        <span class="flex items-center text-sm text-green-600 ml-auto">
-                                            <mat-icon class="text-base mr-1">payments</mat-icon>
-                                            ₹{{ job.salary | number }}
-                                        </span>
-                                    </div>
+                                <div>
+                                    <div class="h-3 bg-neutral-100 rounded w-full mb-2"></div>
+                                    <div class="h-3 bg-neutral-100 rounded w-5/6"></div>
+                                </div>
+                                <div class="flex gap-3 pt-2">
+                                    <div class="h-6 bg-neutral-200 rounded-full w-24"></div>
+                                    <div class="h-6 bg-neutral-200 rounded-full w-20"></div>
+                                    <div class="h-6 bg-neutral-200 rounded-full w-28"></div>
                                 </div>
                             </div>
                         </div>
@@ -126,85 +124,299 @@
                 </div>
             </div>
 
-            <!-- Right column for latest jobs -->
-            <div class="col-span-2">
-                <div class="p-6">
-                    <div class="latest-jobs-header text-center mb-8">
-                        <h2 class="text-heading-2 font-bold text-neutral-900">Latest Jobs</h2>
-                    </div>
-
-                    <!-- Loading State for Top Jobs -->
-                    <div *ngIf="isLoading" class="space-y-4">
-                        <div *ngFor="let i of [1,2,3,4,5]" 
-                             class="bg-white rounded-xl p-4 animate-pulse border border-neutral-100">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-14 h-14 bg-neutral-100 rounded-lg"></div>
-                                <div class="flex-grow space-y-3">
-                                    <div class="h-5 bg-neutral-100 rounded w-2/3"></div>
-                                    <div class="h-4 bg-neutral-100 rounded w-1/2"></div>
-                                </div>
-                            </div>
+            <!-- Error State -->
+            <div *ngIf="error" class="group">
+                <div class="p-6 rounded-2xl bg-red-50/50 border border-red-200 backdrop-blur-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 rounded-xl bg-red-100">
+                            <mat-icon class="text-red-600">error_outline</mat-icon>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-red-900 mb-1">Unable to load jobs</h3>
+                            <p class="text-sm text-red-700 mb-4">{{ error }}</p>
+                            <button (click)="getAllJobs()"
+                                class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 text-sm font-medium">
+                                Try Again
+                            </button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Top Jobs List -->
-                    <div class="space-y-4">
-                        <div *ngFor="let job of top5Jobs" 
-                             (click)="navigateToJob(job.id)" 
-                             class="group relative bg-white rounded-xl p-4 hover:shadow-lg transition-all duration-300 cursor-pointer border border-neutral-100">
-                            
-                            <!-- New Label if job is recent -->
-                            <div *ngIf="isNewJob(job.post_date)" 
-                                 class="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                                New
+            <!-- No Jobs State -->
+            <div *ngIf="!isLoading && !error && jobList.length === 0" class="group">
+                <div
+                    class="p-12 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50/50 border border-blue-200 text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="p-4 rounded-full bg-blue-100">
+                            <mat-icon class="text-blue-600 text-3xl">jobs</mat-icon>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-2">No opportunities available</h3>
+                    <p class="text-neutral-600 mb-6">Please check back soon for new job listings</p>
+                </div>
+            </div>
+
+            <!-- Job Cards -->
+            <div class="space-y-3" *ngIf="!isLoading && filteredJobList.length > 0">
+                <div *ngFor="let job of filteredJobList; trackBy: trackByJobId" (click)="navigateToJob(job.id)"
+                    class="group cursor-pointer">
+                    <!-- Job Card -->
+                    <div class="bg-white rounded-xl border border-neutral-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 overflow-hidden">
+                        <div class="p-5 md:p-6 flex gap-4 md:gap-5">
+                            <!-- Company Logo Section -->
+                            <div class="relative flex-shrink-0">
+                                <div class="w-14 h-14 md:w-16 md:h-16 rounded-lg bg-neutral-50 border border-neutral-200 p-2 flex items-center justify-center flex-shrink-0">
+                                    <img [src]="job.img_url" class="w-full h-full object-contain"
+                                        [alt]="job.company_name + ' logo'" (error)="job.img_url = defaultImageUrl"
+                                        loading="lazy" />
+                                </div>
+                                <!-- New Job Badge -->
+                                <div *ngIf="isNewJob(job.post_date)" class="absolute -top-1 -right-1">
+                                    <div class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold shadow-md">
+                                        <mat-icon class="text-xs">star</mat-icon>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Main Content -->
-                            <div class="flex items-start">
-                                <!-- Company Logo with Background -->
-                                <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-neutral-50 border border-neutral-100 p-2">
-                                    <img [src]="job.img_url" 
-                                         class="w-full h-full object-contain"
-                                         [alt]="job.company_name + ' logo'"
-                                         (error)="job.img_url = defaultImageUrl"
-                                         loading="lazy" />
+                            <div class="flex-1 min-w-0">
+                                <!-- Title and Company -->
+                                <div class="mb-2.5">
+                                    <h2 class="text-base md:text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                                        {{ job.title }}
+                                    </h2>
+                                    <p class="text-sm md:text-base text-neutral-600 mt-0.5">
+                                        {{ job.company_name }}
+                                    </p>
                                 </div>
 
-                                <!-- Job Details -->
-                                <div class="flex-grow ml-4">
-                                    <div class="flex items-start justify-between">
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors line-clamp-1">
-                                                {{ job.title }}
-                                            </h3>
-                                            <p class="text-sm text-neutral-600 mb-2">{{ job.company_name }}</p>
-                                        </div>
-                                    </div>
+                                <!-- Description -->
+                                <p class="text-sm text-neutral-500 mb-3 line-clamp-2">
+                                    {{ job.mini_description }}
+                                </p>
 
-                                    <!-- Job Highlights -->
-                                    <div class="flex items-center gap-3 mt-2">
-                                        <span *ngIf="job.job_type" 
-                                              class="text-xs px-2 py-1 rounded-full"
-                                              [ngClass]="{
-                                                'bg-blue-50 text-blue-700': job.job_type === 'Full-time',
-                                                'bg-green-50 text-green-700': job.job_type === 'Part-time',
-                                                'bg-purple-50 text-purple-700': job.job_type === 'Contract'
-                                              }">
-                                            {{ job.job_type }}
-                                        </span>
-                                        <span class="text-xs text-neutral-500">
-                                            Posted {{ job.post_date | date:'dd MMM' }}
-                                        </span>
-                                        <span *ngIf="job.salary" class="text-xs text-green-600 font-medium ml-auto">
-                                            ₹{{ job.salary | number }}
-                                        </span>
-                                    </div>
+                                <!-- Info Row 1: Job Type, Location, Experience, Date -->
+                                <div class="flex flex-wrap gap-2 md:gap-3 items-center mb-3">
+                                    <!-- Job Type Badge -->
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
+                                        [ngClass]="{
+                                            'bg-blue-100 text-blue-700': job.job_type === 'Full-time',
+                                            'bg-green-100 text-green-700': job.job_type === 'Part-time',
+                                            'bg-purple-100 text-purple-700': job.job_type === 'Remote',
+                                            'bg-orange-100 text-orange-700': job.job_type === 'Internship'
+                                        }">
+                                        {{ job.job_type }}
+                                    </span>
+
+                                    <!-- Location -->
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-neutral-600 bg-neutral-100 rounded-full">
+                                        <mat-icon class="text-sm">location_on</mat-icon>
+                                        <span class="hidden sm:inline">{{ job.location || 'Remote' }}</span>
+                                        <span class="sm:hidden">{{ (job.location || 'Remote') | slice:0:10 }}</span>
+                                    </span>
+
+                                    <!-- Experience -->
+                                    <span class="hidden lg:inline-flex items-center gap-1 px-2.5 py-1 text-xs text-neutral-600 bg-neutral-100 rounded-full">
+                                        <mat-icon class="text-sm">trending_up</mat-icon>
+                                        {{ job.experience }}
+                                    </span>
+
+                                    <!-- Date -->
+                                    <span class="text-xs text-neutral-500 ml-auto md:ml-1">
+                                        {{ job.post_date | date:'d MMM' }}
+                                    </span>
+                                </div>
+
+                                <!-- Info Row 2: Views and Salary -->
+                                <div class="flex items-center justify-between pt-2 border-t border-neutral-100">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-neutral-500">
+                                        <mat-icon class="text-sm">visibility</mat-icon>
+                                        <span class="hidden sm:inline">{{ job.views || 0 }} views</span>
+                                        <span class="sm:hidden">{{ job.views || 0 }}</span>
+                                    </span>
+
+                                    <!-- Salary -->
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-green-700 bg-green-100 rounded-full">
+                                        <mat-icon class="text-sm">currency_rupee</mat-icon>
+                                        <span class="hidden sm:inline">{{ job.salary | number }}</span>
+                                        <span class="sm:hidden">{{ (job.salary / 100000) | number:'1.1-1' }}L</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                      
                 </div>
+
+                <!-- Ad Banner - Content Middle -->
+                <app-ad-placeholder placement="content" class="block my-6"></app-ad-placeholder>
+
+                <!-- Pagination Controls -->
+                <div class="mt-8 space-y-4" *ngIf="!isLoading && totalJobs > 0">
+                    <!-- Page Numbers -->
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <!-- Previous Button -->
+                        <button
+                            (click)="previousPage()"
+                            [disabled]="currentPage === 1"
+                            [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100'"
+                            class="p-2 rounded-lg border border-neutral-200 transition-colors text-neutral-600">
+                            <mat-icon class="text-sm">chevron_left</mat-icon>
+                        </button>
+
+                        <!-- Page Numbers -->
+                        <button
+                            *ngFor="let page of getPageNumbers()"
+                            (click)="goToPage(page)"
+                            [ngClass]="{
+                                'bg-primary-500 text-white': currentPage === page,
+                                'border-neutral-200 text-neutral-700 hover:bg-neutral-50': currentPage !== page
+                            }"
+                            class="w-10 h-10 rounded-lg border transition-colors font-medium text-sm">
+                            {{ page }}
+                        </button>
+
+                        <!-- Next Button -->
+                        <button
+                            (click)="nextPage()"
+                            [disabled]="currentPage === totalPages"
+                            [ngClass]="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100'"
+                            class="p-2 rounded-lg border border-neutral-200 transition-colors text-neutral-600">
+                            <mat-icon class="text-sm">chevron_right</mat-icon>
+                        </button>
+                    </div>
+
+                    <!-- Page Info -->
+                    <div class="text-center text-xs sm:text-sm text-neutral-600">
+                        Page <span class="font-semibold">{{ currentPage }}</span> of <span class="font-semibold">{{ totalPages }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column for latest jobs -->
+        <div class="col-span-1 lg:col-span-2">
+            <!-- Sticky Sidebar Container -->
+            <div class="sticky top-20 sm:top-24 space-y-4 sm:space-y-6">
+                <!-- Featured Section Header -->
+                <div class="bg-gradient-to-br from-primary-50 to-blue-50 border border-primary-200/50 rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 rounded-lg bg-primary-100">
+                            <mat-icon class="text-primary-600">flash_on</mat-icon>
+                        </div>
+                        <h2 class="text-xl font-bold text-neutral-900">Latest Jobs</h2>
+                    </div>
+                    <p class="text-sm text-neutral-600 ml-11">
+                        Recently posted opportunities
+                    </p>
+                </div>
+
+                <!-- Ad Banner - Sidebar Top -->
+                <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder>
+
+                <!-- Loading State for Top Jobs -->
+                <div *ngIf="isLoading" class="space-y-3">
+                    <div *ngFor="let i of [1,2,3,4,5]"
+                        class="bg-white rounded-xl p-4 animate-pulse border border-neutral-100">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-12 h-12 bg-neutral-200 rounded-lg flex-shrink-0"></div>
+                            <div class="flex-1 space-y-2">
+                                <div class="h-4 bg-neutral-200 rounded w-3/4"></div>
+                                <div class="h-3 bg-neutral-100 rounded w-1/2"></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="h-5 bg-neutral-100 rounded w-16"></div>
+                            <div class="h-5 bg-neutral-100 rounded w-20"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Jobs List -->
+                <div class="space-y-3">
+                    <div *ngFor="let job of top5Jobs" (click)="navigateToJob(job.id)"
+                        class="group relative bg-white rounded-xl border border-neutral-200 hover:border-primary-300 transition-all duration-300 hover:shadow-md overflow-hidden cursor-pointer">
+
+                        <!-- New Badge Overlay -->
+                        <div *ngIf="isNewJob(job.post_date)" class="absolute top-2 right-2 z-10">
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold shadow-lg">
+                                <mat-icon class="text-xs">new_releases</mat-icon>
+                                New
+                            </span>
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="p-4">
+                            <!-- Company Info -->
+                            <div class="flex items-start gap-3 mb-3">
+                                <!-- Logo -->
+                                <div
+                                    class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-neutral-50 border border-neutral-100 p-1 flex items-center justify-center">
+                                    <img [src]="job.img_url" class="w-full h-full object-contain"
+                                        [alt]="job.company_name + ' logo'" (error)="job.img_url = defaultImageUrl"
+                                        loading="lazy" />
+                                </div>
+
+                                <!-- Title & Company -->
+                                <div class="flex-1 min-w-0">
+                                    <h3
+                                        class="text-sm font-bold text-neutral-900 group-hover:text-primary-600 truncate transition-colors">
+                                        {{ job.title }}
+                                    </h3>
+                                    <p class="text-xs text-neutral-500 truncate">
+                                        {{ job.company_name }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Job Highlights -->
+                            <div class="space-y-2">
+                                <!-- Job Type & Salary Row -->
+                                <div class="flex items-center gap-2">
+                                    <span *ngIf="job.job_type"
+                                        class="inline-flex items-center gap-0.5 text-xs px-2 py-1 rounded-full font-semibold"
+                                        [ngClass]="{
+                                                'bg-blue-100 text-blue-700': job.job_type === 'Full-time',
+                                                'bg-green-100 text-green-700': job.job_type === 'Part-time',
+                                                'bg-purple-100 text-purple-700': job.job_type === 'Contract'
+                                              }">
+                                        {{ job.job_type }}
+                                    </span>
+                                    <span *ngIf="job.salary" class="text-xs text-green-700 font-bold ml-auto">
+                                        ₹{{ job.salary | number }}
+                                    </span>
+                                </div>
+
+                                <!-- Meta Info -->
+                                <div class="flex items-center justify-between text-xs text-neutral-500">
+                                    <span class="flex items-center gap-1">
+                                        <mat-icon class="text-xs">access_time</mat-icon>
+                                        {{ job.post_date | date:'dd MMM' }}
+                                    </span>
+                                    <span class="flex items-center gap-1 text-neutral-400">
+                                        <mat-icon class="text-xs">visibility</mat-icon>
+                                        {{ job.views || 0 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Indicator -->
+                        <div
+                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View More Button -->
+                <button (click)="getAllJobs()"
+                    class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-primary-500 to-blue-500 text-white font-semibold text-sm hover:shadow-lg hover:from-primary-600 hover:to-blue-600 transition-all duration-300">
+                    <span class="flex items-center justify-center gap-2">
+                        <mat-icon class="text-base">arrow_forward</mat-icon>
+                        View All Jobs
+                    </span>
+                </button>
             </div>
         </div>
     </div>

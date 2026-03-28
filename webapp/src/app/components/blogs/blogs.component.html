@@ -1,0 +1,98 @@
+<div class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-purple-600 to-primary-600 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">Career Yojna Blog</h1>
+                <p class="text-xl text-purple-100">Insights, Updates, and Career Guidance for Fresh Graduates</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex justify-center items-center py-12">
+            <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && allBlogPosts.length === 0" class="text-center py-12">
+            <mat-icon class="text-gray-400" style="font-size: 48px; width: 48px; height: 48px;">article</mat-icon>
+            <h3 class="mt-4 text-lg font-medium text-gray-900">No blog posts yet</h3>
+            <p class="mt-1 text-gray-500">Check back later for new content!</p>
+        </div>
+
+        <!-- Content State -->
+        <div *ngIf="!loading && allBlogPosts.length > 0">
+            <!-- Category Filter -->
+            <div class="flex flex-wrap gap-4 mb-12 justify-center">
+                <button *ngFor="let category of categories"
+                    [class.bg-primary-600]="selectedCategory === category.name"
+                    [class.text-white]="selectedCategory === category.name"
+                    [class.bg-white]="selectedCategory !== category.name"
+                    [class.text-gray-700]="selectedCategory !== category.name"
+                    (click)="filterByCategory(category.name)"
+                    class="px-6 py-2 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-300">
+                {{category.name}}
+                <span class="ml-2 text-sm opacity-75">({{category.count}})</span>
+            </button>
+        </div>
+
+        <!-- Featured Post -->
+        <div *ngIf="selectedCategory === 'All'" class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12 transform hover:scale-[1.02] transition-all duration-300">
+            <div class="md:flex">
+                <div class="md:flex-shrink-0 md:w-2/5">
+                    <img class="h-64 w-full object-cover md:h-full" [src]="allBlogPosts[0].image" alt="Blog post image">
+                </div>
+                <div class="p-8 md:w-3/5">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="category-badge category-product">{{allBlogPosts[0].category}}</span>
+                        <span class="text-sm text-gray-500">{{allBlogPosts[0].readTime}}</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{allBlogPosts[0].title}}</h2>
+                    <p class="text-gray-600 mb-4">{{allBlogPosts[0].summary}}</p>
+                    <div class="flex items-center justify-between mt-6">
+                        <div class="flex items-center">
+                            <mat-icon class="text-primary-600 mr-2">person</mat-icon>
+                            <span class="text-sm text-gray-600">{{allBlogPosts[0].author}}</span>
+                        </div>
+                        <span class="text-sm text-gray-500">{{allBlogPosts[0].date}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div *ngFor="let post of (selectedCategory === 'All' ? filteredBlogPosts.slice(1) : filteredBlogPosts); trackBy: trackByBlogId" 
+                 class="bg-white rounded-xl shadow-md overflow-hidden blog-card">
+                <div class="relative">
+                    <img class="h-48 w-full object-cover" [src]="post.image" alt="Blog post image">
+                    <span class="absolute top-4 right-4 category-badge" 
+                          [ngClass]="{
+                            'category-product': post.category === 'Product Update',
+                            'category-news': post.category === 'Industry News',
+                            'category-advice': post.category === 'Career Advice'
+                          }">
+                        {{post.category}}
+                    </span>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <mat-icon class="text-gray-400 text-sm">schedule</mat-icon>
+                        <span class="text-sm text-gray-500">{{post.readTime}}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{post.title}}</h3>
+                    <p class="text-gray-600 mb-4">{{post.summary}}</p>
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                        <div class="flex items-center">
+                            <mat-icon class="text-primary-600 mr-2">person</mat-icon>
+                            <span class="text-sm text-gray-600">{{post.author}}</span>
+                        </div>
+                        <span class="text-sm text-gray-500">{{post.date}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

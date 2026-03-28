@@ -36,6 +36,33 @@ body {
     min-height: 1px;
 }
 
+/* App-specific utility helpers for clearer layout */
+.app-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.card-shadow {
+    box-shadow: 0 6px 20px rgba(2,6,23,0.08), 0 2px 6px rgba(2,6,23,0.04);
+}
+
+.brand-heading {
+    font-weight: 700;
+    color: #0f172a; /* neutral-900 */
+}
+
+.muted {
+    color: #6b7280; /* neutral-500 */
+}
+
+.sticky-sidebar {
+    position: sticky;
+    top: 4.5rem; /* keeps it below the navbar */
+}
+
 /* .mat-mdc-snack-bar-container {
     &.warning {
       --mdc-snackbar-container-color: #3ed36d;

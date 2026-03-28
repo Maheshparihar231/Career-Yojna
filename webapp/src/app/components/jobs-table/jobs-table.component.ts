@@ -1,5 +1,4 @@
-import { getLocaleFirstDayOfWeek } from '@angular/common';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,8 +12,11 @@ import { DataService } from 'src/app/service/data.service';
   styleUrls: ['./jobs-table.component.css']
 })
 export class JobsTableComponent implements OnInit, AfterViewInit {
+  @Input() showEditDelete: boolean = false;
+  @Output() editRequest = new EventEmitter<Job>();
+  @Output() deleteRequest = new EventEmitter<Job>();
 
-  displayedColumns: string[] = ['company_name', 'apply_link', 'post_date', 'role','delete'];
+  displayedColumns: string[] = ['company_name', 'apply_link', 'post_date', 'role'];
   dataSource: MatTableDataSource<Job>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -45,43 +47,56 @@ export class JobsTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    console.log("works");
-    this.getAllJobs();    
+    if (this.showEditDelete) {
+      this.displayedColumns = [...this.displayedColumns, 'edit', 'delete'];
+    } else {
+      this.displayedColumns = [...this.displayedColumns, 'delete'];
+    }
+    this.refreshJobs();    
   }
 
-  getAllJobs() {
-    this.dataService.getAllJobs().subscribe(
-      (res : any[]) => {
-        if(res && res.length>0){
-          this.jobList = res.map((e:any)=>{
-            const data = e.payload.doc.data();
-            data.id = e.payload.doc.id;
-            this.jobList.push(data);
-            return data;
-          });
-        }else{
-          console.log("No Data received");
-        }
-      }, (err) => {
-        console.error(err);
+  refreshJobs() {
+    this.dataService.getAllJobs().subscribe({
+      next: (jobs) => {
+        this.dataSource.data = jobs;
+      },
+      error: (error) => {
+        console.error('Error fetching jobs:', error);
       }
-    )
-    this.setData(this.jobList);
+    });
   }
 
-  setData(jobList: Job[]) {
-    this.dataSource.data = jobList;
-    console.log(this.dataSource.data);
+  private jobMatchesFilter(job: Job, filter: string): boolean {
+    const searchStr = filter.toLowerCase();
+    return (
+      job.company_name?.toLowerCase().includes(searchStr) ||
+      job.role?.toLowerCase().includes(searchStr) ||
+      job.location?.toLowerCase().includes(searchStr) ||
+      job.job_type?.toLowerCase().includes(searchStr) ||
+      job.mini_description?.toLowerCase().includes(searchStr)
+    );
   }
 
-  updateJob() {
-
+  onEdit(job: Job) {
+    this.editRequest.emit(job);
   }
 
   deleteJob(job: Job) {
-    if (window.confirm('Are you sure? ' + job.company_name)) {
-      this.dataService.deleteJob(job);
-      this.getAllJobs();
+    const confirmMessage = `Are you sure you want to delete the job: ${job.title || ''} at ${job.company_name || ''}?`;
+    
+    if (window.confirm(confirmMessage)) {
+      if (this.showEditDelete) {
+        this.deleteRequest.emit(job);
+      } else {
+        this.dataService.deleteJob(job).subscribe({
+          next: () => {
+            this.refreshJobs();
+          },
+          error: (error) => {
+            console.error('Error deleting job:', error);
+          }
+        });
+      }
     }
   }
 

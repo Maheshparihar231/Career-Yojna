@@ -1,243 +1,288 @@
-<div class="flex left-0">
-    <button mat-raised-button (click)="uploadBanner()">
-        <mat-icon>upload</mat-icon>
-        upload new banner
+<div class="flex flex-wrap gap-2 mb-4">
+    <button mat-raised-button (click)="uploadBanner()" color="primary" class="text-xs sm:text-sm">
+        <mat-icon class="text-sm">cloud_upload</mat-icon>
+        <span class="hidden sm:inline">Upload New</span>
+        <span class="sm:hidden">Upload</span>
     </button>
+    <button mat-button (click)="refreshBanners()" class="text-xs sm:text-sm">
+        <mat-icon class="text-sm">refresh</mat-icon>
+        <span class="hidden sm:inline">Refresh</span>
+    </button>
+    <span class="text-xs text-gray-600 flex items-center ml-auto sm:ml-4">
+        <mat-icon class="text-xs mr-1">info</mat-icon>
+        <span class="hidden sm:inline">Upload banners to use in job postings</span>
+    </span>
 </div>
-<div class="flex items-center justify-center p-12">
+<div class="flex items-center justify-center p-4 sm:p-8 md:p-12">
     <!-- Author: FormBold Team -->
-    <div class="mx-auto w-full bg-white">
+    <div class="mx-auto w-full max-w-2xl bg-white">
         <form [formGroup]="jobForm" (ngSubmit)="addJob()">
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3">
-                    <div class="mb-5">
-                        <label for="title" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Title
-                        </label>
-                        <input type="text" name="title" id="title" placeholder="Title"
-                            formControlName="title"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
-                </div>
+            <!-- Title Field -->
+            <div class="mb-4 sm:mb-5">
+                <label for="title" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                    Title
+                </label>
+                <input type="text" name="title" id="title" placeholder="Job Title"
+                    formControlName="title"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3">
-                    <div class="mb-5">
-                        <label for="miniDescription"
-                            class="mb-3 block text-base font-medium text-[#07074D]">
-                            Mini Description
-                        </label>
-                        <textarea name="miniDescription" id="miniDescription" rows="2"
-                            formControlName="mini_description" placeholder=" mini description"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
 
-                    <label for="applyList" class="mb-3 block text-base font-medium text-[#07074D]">
+            <!-- Mini Description Field -->
+            <div class="mb-4 sm:mb-5">
+                <label for="miniDescription"
+                    class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                    Mini Description
+                </label>
+                <textarea name="miniDescription" id="miniDescription" rows="2"
+                    formControlName="mini_description" placeholder="Brief job description"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
+            </div>
+
+            <!-- Two Column Fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+                <!-- Banner Selection -->
+                <div>
+                    <label for="bannerSelect" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
                         Choose Banner
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" placeholder="Pick one" aria-label="Number"
-                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                        [formControl]="myControl" [matAutocomplete]="auto">
+                    
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Select a banner</mat-label>
+                        <input matInput 
+                               type="text" 
+                               placeholder="Search banners..." 
+                               [formControl]="myControl" 
+                               [matAutocomplete]="auto">
+                        <mat-icon matSuffix>image</mat-icon>
+                    </mat-form-field>
 
                     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
                         (optionSelected)="updateDownloadLink($event)">
                         <mat-option *ngFor="let option of filteredOptions | async"
-                            [value]="option">{{option}}</mat-option>
+                            [value]="option">
+                            <div class="flex items-center">
+                                <mat-icon class="mr-2">image</mat-icon>
+                                <span>{{option}}</span>
+                            </div>
+                        </mat-option>
+                        <mat-option *ngIf="(filteredOptions | async)?.length === 0" disabled>
+                            <div class="text-gray-500 text-center py-2 text-xs sm:text-sm">
+                                <mat-icon class="mr-2">warning</mat-icon>
+                                No banners found
+                            </div>
+                        </mat-option>
                     </mat-autocomplete>
 
-                </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="applyList" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Apply Link
-                        </label>
-                        <input type="text" name="applyList" id="applyList" placeholder="Apply Link"
-                            formControlName="apply_link"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                    <!-- Banner Preview -->
+                    <div *ngIf="downloadLink" class="mt-2 p-2 sm:p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <mat-icon class="text-green-500 mr-2 text-sm">check_circle</mat-icon>
+                            <span class="text-xs sm:text-sm font-medium text-green-700">Selected</span>
+                        </div>
+                        <img [src]="downloadLink" 
+                             alt="Selected banner" 
+                             class="w-full h-24 sm:h-32 object-cover rounded border">
                     </div>
+
+                    <!-- Help Text -->
+                    <div class="mt-2 text-xs text-gray-500">
+                        <mat-icon class="text-xs align-middle mr-1">info</mat-icon>
+                        Upload a new banner if needed
+                    </div>
+
+                    <!-- No Banners Warning -->
+                    <div *ngIf="options.length === 0" class="mt-2 sm:mt-3 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <mat-icon class="text-yellow-600 text-sm">warning</mat-icon>
+                            <div class="text-xs text-yellow-800">
+                                <p class="font-medium">No banners available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apply Link -->
+                <div>
+                    <label for="applyList" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Apply Link
+                    </label>
+                    <input type="text" name="applyList" id="applyList" placeholder="https://example.com/apply"
+                        formControlName="apply_link"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="role" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Role
-                        </label>
-                        <input type="text" name="role" id="role" placeholder="Role" formControlName="role"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+
+            <!-- Role and Department -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="role" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Role
+                    </label>
+                    <input type="text" name="role" id="role" placeholder="Job Role" formControlName="role"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Department
-                        </label>
-                        <input type="text" name="department" id="department" placeholder="Department"
-                            formControlName="department"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+                <div>
+                    <label for="department" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Department
+                    </label>
+                    <input type="text" name="department" id="department" placeholder="Department"
+                        formControlName="department"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="remote" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Remote
-                        </label>
-                        <mat-select name="remote" id="remote" formControlName="remote"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+
+            <!-- Remote and Company -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="remote" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Remote
+                    </label>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Remote</mat-label>
+                        <mat-select name="remote" id="remote" formControlName="remote">
                             <mat-option value="Yes">Yes</mat-option>
                             <mat-option value="No">No</mat-option>
                         </mat-select>
-                    </div>
+                    </mat-form-field>
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="companyName" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Company Name
-                        </label>
-                        <input type="text" name="companyName" id="companyName" placeholder="Company Name"
-                            formControlName="company_name"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+                <div>
+                    <label for="companyName" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Company Name
+                    </label>
+                    <input type="text" name="companyName" id="companyName" placeholder="Company Name"
+                        formControlName="company_name"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="location" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Location
-                        </label>
-                        <input type="text" name="location" id="location" placeholder="Location"
-                            formControlName="location"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+
+            <!-- Location and Job Type -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="location" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Location
+                    </label>
+                    <input type="text" name="location" id="location" placeholder="Job Location"
+                        formControlName="location"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="jobType" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Job Type
-                        </label>
-                        <mat-select type="text" name="jobType" id="jobType" placeholder="Job Type"
-                            formControlName="job_type"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+                <div>
+                    <label for="jobType" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Job Type
+                    </label>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Select type</mat-label>
+                        <mat-select name="jobType" id="jobType" formControlName="job_type">
                             <mat-option value="">Select any</mat-option>
                             <mat-option value="Full-time">Full-time</mat-option>
                             <mat-option value="Internship">Internship</mat-option>
                             <mat-option value="Part-time">Part-time</mat-option>
                             <mat-option value="Contract">Contract</mat-option>
                         </mat-select>
-                    </div>
+                    </mat-form-field>
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="salary" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Salary
-                        </label>
-                        <input type="number" name="salary" id="salary" placeholder="Salary"
-                            formControlName="salary"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+
+            <!-- Salary and Experience -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="salary" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Salary
+                    </label>
+                    <input type="number" name="salary" id="salary" placeholder="0"
+                        formControlName="salary"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="experience" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Experience
-                        </label>
-                        <input type="number" name="guest" id="guest" placeholder="5" min="0"
-                            formControlName="experience"
-                            class="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+                <div>
+                    <label for="experience" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Experience (years)
+                    </label>
+                    <input type="number" name="experience" id="experience" placeholder="0" min="0"
+                        formControlName="experience"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="qualification" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Qualification
-                        </label>
-                        <input type="text" name="qualification" id="qualification"
-                            placeholder="Qualification" formControlName="qualification"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+
+            <!-- Qualification and Skills -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="qualification" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Qualification
+                    </label>
+                    <input type="text" name="qualification" id="qualification"
+                        placeholder="Education required" formControlName="qualification"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="skillsRequired" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Skills Required
-                        </label>
-                        <input type="text" name="skillsRequired" id="skillsRequired"
-                            placeholder="Skills Required" formControlName="skills_required"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+                <div>
+                    <label for="skillsRequired" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Skills Required
+                    </label>
+                    <input type="text" name="skillsRequired" id="skillsRequired"
+                        placeholder="e.g., Java, Python" formControlName="skills_required"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="benefits" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Benefits
-                        </label>
-                        <input type="text" name="benefits" id="benefits" placeholder="Benefits"
-                            formControlName="benefits"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+
+            <!-- Benefits -->
+            <div class="mt-4 sm:mt-6">
+                <label for="benefits" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                    Benefits
+                </label>
+                <input type="text" name="benefits" id="benefits" placeholder="e.g., Health insurance, 401k"
+                    formControlName="benefits"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            </div>
+
+            <!-- Responsibilities -->
+            <div class="mt-4 sm:mt-6">
+                <label for="responsibilities"
+                    class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                    Responsibilities
+                </label>
+                <input type="text" name="responsibilities" id="responsibilities"
+                    placeholder="Job responsibilities" formControlName="responsibilities"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            </div>
+
+            <!-- Requirements and Deadline -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+                <div>
+                    <label for="requirements" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Requirements
+                    </label>
+                    <input type="text" name="requirements" id="requirements" placeholder="e.g., 2+ years exp"
+                        formControlName="requirements"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="responsibilities"
-                            class="mb-3 block text-base font-medium text-[#07074D]">
-                            Responsibilities
-                        </label>
-                        <input type="text" name="responsibilities" id="responsibilities"
-                            placeholder="Responsibilities" formControlName="responsibilities"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
+                <div>
+                    <label for="deadline" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                        Deadline
+                    </label>
+                    <input type="date" name="deadline" id="deadline" formControlName="deadline"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 </div>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="requirements" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Requirements
-                        </label>
-                        <input type="text" name="requirements" id="requirements" placeholder="Requirements"
-                            formControlName="requirements"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
-                </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="deadline" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Deadline
-                        </label>
-                        <input type="date" name="deadline" id="deadline" formControlName="deadline"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
-                </div>
+
+            <!-- Description -->
+            <div class="mt-4 sm:mt-6">
+                <label for="description" class="mb-2 sm:mb-3 block text-sm sm:text-base font-medium text-[#07074D]">
+                    Description
+                </label>
+                <textarea name="description" id="description" rows="4" placeholder="Full job description..."
+                    formControlName="description"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 sm:py-3 px-3 sm:px-6 text-sm sm:text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
             </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3">
-                    <div class="mb-5">
-                        <label for="description" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Description
-                        </label>
-                        <textarea name="description" id="description" rows="4" placeholder="Description"
-                            formControlName="description"
-                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 justify-between mt-6 sm:mt-8">
+                <button mat-button type="button" (click)="resetForm()" class="text-sm sm:text-base">
+                    Cancel
+                </button>
                 <button mat-raised-button type="submit"
-                    style="color: white; background-color: rgb(82, 77, 229);">
-                    Upload to server
+                    style="color: white; background-color: rgb(82, 77, 229);"
+                    [disabled]="!jobForm.valid"
+                    class="text-sm sm:text-base py-2 sm:py-3">
+                    {{ isEditing ? 'Update' : 'Create' }} Job
                 </button>
             </div>
         </form>
