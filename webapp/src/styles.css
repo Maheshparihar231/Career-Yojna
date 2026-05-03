@@ -3,6 +3,53 @@
 @tailwind components;
 @tailwind utilities;
 
+:root,
+html[data-theme='light'] {
+    --app-bg: #f6f8fc;
+    --app-bg-soft: #eef2ff;
+    --app-surface: rgba(255, 255, 255, 0.92);
+    --app-surface-strong: #ffffff;
+    --app-surface-muted: rgba(241, 245, 249, 0.9);
+    --app-text: #0f172a;
+    --app-text-muted: #475569;
+    --app-text-soft: #64748b;
+    --app-border: rgba(148, 163, 184, 0.22);
+    --app-border-strong: rgba(99, 102, 241, 0.18);
+    --app-accent: #4f46e5;
+    --app-accent-strong: #3730a3;
+    --app-accent-soft: rgba(79, 70, 229, 0.08);
+    --app-success-soft: rgba(34, 197, 94, 0.14);
+    --app-danger-soft: rgba(239, 68, 68, 0.12);
+    --app-hero-start: #4338ca;
+    --app-hero-end: #0ea5e9;
+    --app-footer-bg: rgba(255, 255, 255, 0.85);
+    --app-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    --app-shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+html[data-theme='dark'] {
+    --app-bg: #07111f;
+    --app-bg-soft: #0f1b2d;
+    --app-surface: rgba(15, 23, 42, 0.88);
+    --app-surface-strong: rgba(15, 23, 42, 0.98);
+    --app-surface-muted: rgba(30, 41, 59, 0.86);
+    --app-text: #e2e8f0;
+    --app-text-muted: #cbd5e1;
+    --app-text-soft: #94a3b8;
+    --app-border: rgba(148, 163, 184, 0.18);
+    --app-border-strong: rgba(96, 165, 250, 0.24);
+    --app-accent: #7c83ff;
+    --app-accent-strong: #c4b5fd;
+    --app-accent-soft: rgba(129, 140, 248, 0.16);
+    --app-success-soft: rgba(34, 197, 94, 0.18);
+    --app-danger-soft: rgba(248, 113, 113, 0.18);
+    --app-hero-start: #0f172a;
+    --app-hero-end: #1d4ed8;
+    --app-footer-bg: rgba(8, 15, 27, 0.92);
+    --app-shadow: 0 24px 55px rgba(2, 6, 23, 0.38);
+    --app-shadow-soft: 0 14px 36px rgba(2, 6, 23, 0.28);
+}
+
 html,
 body {
     height: 100%;
@@ -10,7 +57,13 @@ body {
 
 body {
     margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
+        var(--app-bg);
+    color: var(--app-text);
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .cdk-overlay-pane {
@@ -61,6 +114,162 @@ body {
 .sticky-sidebar {
     position: sticky;
     top: 4.5rem; /* keeps it below the navbar */
+}
+
+.app-shell {
+    min-height: 100vh;
+    color: var(--app-text);
+}
+
+.app-main {
+    min-height: calc(100vh - 84px);
+}
+
+.app-footer-shell {
+    margin: 1.5rem auto 0;
+    padding: 0 1rem 1rem;
+}
+
+.page-shell {
+    color: var(--app-text);
+}
+
+.surface-panel {
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--app-shadow-soft);
+    backdrop-filter: blur(16px);
+}
+
+.hero-panel,
+.page-hero {
+    background:
+        linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(14, 165, 233, 0.06)),
+        var(--app-surface);
+    border: 1px solid var(--app-border-strong);
+    box-shadow: var(--app-shadow-soft);
+    backdrop-filter: blur(18px);
+}
+
+.page-hero {
+    background: linear-gradient(135deg, var(--app-hero-start), var(--app-hero-end));
+    color: #fff;
+}
+
+.theme-input,
+.theme-select {
+    background: var(--app-surface-strong);
+    color: var(--app-text);
+    border-color: var(--app-border);
+}
+
+.theme-input::placeholder {
+    color: var(--app-text-soft);
+}
+
+.theme-input:focus,
+.theme-select:focus {
+    outline: none;
+    border-color: var(--app-accent);
+    box-shadow: 0 0 0 4px var(--app-accent-soft);
+}
+
+.theme-card {
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--app-shadow-soft);
+}
+
+.theme-muted {
+    color: var(--app-text-muted);
+}
+
+.theme-soft {
+    color: var(--app-text-soft);
+}
+
+html[data-theme='dark'] .bg-white,
+html[data-theme='dark'] .bg-gray-50,
+html[data-theme='dark'] .bg-neutral-50 {
+    background-color: var(--app-surface) !important;
+}
+
+html[data-theme='dark'] .bg-gray-100,
+html[data-theme='dark'] .bg-neutral-100 {
+    background-color: var(--app-surface-muted) !important;
+}
+
+html[data-theme='dark'] .bg-blue-50,
+html[data-theme='dark'] .bg-primary-50,
+html[data-theme='dark'] .bg-green-50,
+html[data-theme='dark'] .bg-red-50,
+html[data-theme='dark'] .bg-purple-50,
+html[data-theme='dark'] .bg-orange-100,
+html[data-theme='dark'] .bg-blue-100,
+html[data-theme='dark'] .bg-green-100,
+html[data-theme='dark'] .bg-purple-100 {
+    background-color: var(--app-accent-soft) !important;
+}
+
+html[data-theme='dark'] .text-gray-900,
+html[data-theme='dark'] .text-gray-800,
+html[data-theme='dark'] .text-neutral-900,
+html[data-theme='dark'] .text-neutral-800,
+html[data-theme='dark'] .brand-heading {
+    color: var(--app-text) !important;
+}
+
+html[data-theme='dark'] .text-gray-700,
+html[data-theme='dark'] .text-gray-600,
+html[data-theme='dark'] .text-neutral-700,
+html[data-theme='dark'] .text-neutral-600,
+html[data-theme='dark'] .muted {
+    color: var(--app-text-muted) !important;
+}
+
+html[data-theme='dark'] .text-gray-500,
+html[data-theme='dark'] .text-gray-400,
+html[data-theme='dark'] .text-neutral-500,
+html[data-theme='dark'] .text-neutral-400,
+html[data-theme='dark'] .text-purple-100 {
+    color: var(--app-text-soft) !important;
+}
+
+html[data-theme='dark'] .border-gray-100,
+html[data-theme='dark'] .border-gray-200,
+html[data-theme='dark'] .border-neutral-100,
+html[data-theme='dark'] .border-neutral-200,
+html[data-theme='dark'] .border-primary-100,
+html[data-theme='dark'] .border-primary-200,
+html[data-theme='dark'] .border-blue-200,
+html[data-theme='dark'] .border-red-200 {
+    border-color: var(--app-border) !important;
+}
+
+html[data-theme='dark'] .shadow-sm,
+html[data-theme='dark'] .shadow-md,
+html[data-theme='dark'] .shadow-lg,
+html[data-theme='dark'] .shadow-xl,
+html[data-theme='dark'] .card-shadow,
+html[data-theme='dark'] .box {
+    box-shadow: var(--app-shadow-soft) !important;
+}
+
+html[data-theme='dark'] .from-primary-50,
+html[data-theme='dark'] .to-blue-50,
+html[data-theme='dark'] .from-blue-50,
+html[data-theme='dark'] .to-cyan-50,
+html[data-theme='dark'] .from-purple-600,
+html[data-theme='dark'] .to-primary-600 {
+    --tw-gradient-from: transparent !important;
+    --tw-gradient-to: transparent !important;
+}
+
+@media (max-width: 768px) {
+    .app-footer-shell {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
 }
 
 /* .mat-mdc-snack-bar-container {

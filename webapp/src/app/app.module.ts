@@ -29,25 +29,18 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { WorkupdateComponent } from './components/pop-up/workupdate/workupdate.component';
-import { DataComponent } from './page/data/data.component';
 import {AngularFireModule} from '@angular/fire/compat';
-import {AngularFireStorageModule} from '@angular/fire/compat/storage';
 import {AngularFireAuthModule} from '@angular/fire/compat/auth';
-import { environment } from './environment/environment';
-import { UploadBannerComponent } from './components/pop-up/upload-banner/upload-banner.component';
+import { APP_CONFIG } from './config/app-config';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {AsyncPipe} from '@angular/common';
 import {map, startWith} from 'rxjs/operators';
 import {MatExpansionModule} from '@angular/material/expansion';
-import { UploadJobComponent } from './components/upload-job/upload-job.component';
-import { JobsTableComponent } from './components/jobs-table/jobs-table.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
 import { BlogsComponent } from './components/blogs/blogs.component';
-import { BlogManagementComponent } from './components/blog-management/blog-management.component';
-import { BlogsTableComponent } from './components/blogs-table/blogs-table.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
@@ -70,14 +63,8 @@ import { AdPlaceholderComponent } from './components/ad-placeholder/ad-placehold
     ProfiledataComponent,
     ProfileupdateComponent,
     WorkupdateComponent,
-    DataComponent,
-    UploadBannerComponent,
-    UploadJobComponent,
-    JobsTableComponent,
     JobDatailComponent,
     BlogsComponent,
-    BlogManagementComponent,
-    BlogsTableComponent,
     AdPlaceholderComponent
   ],
   imports: [
@@ -109,8 +96,7 @@ import { AdPlaceholderComponent } from './components/ad-placeholder/ad-placehold
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireStorageModule,
+    AngularFireModule.initializeApp(APP_CONFIG.firebase),
     AngularFireAuthModule,
   ],
   providers: [],

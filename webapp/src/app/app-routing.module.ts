@@ -6,7 +6,6 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { SearchComponent } from './page/search/search.component';
 import { ProfileComponent } from './page/profile/profile.component';
-import { DataComponent } from './page/data/data.component';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
 import { BlogsComponent } from './components/blogs/blogs.component';
 

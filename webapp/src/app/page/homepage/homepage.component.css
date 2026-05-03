@@ -1,4 +1,15 @@
-.feature{
-    background-color: rgb(12, 12, 12);
+.feature {
+    background: linear-gradient(135deg, var(--app-hero-start), var(--app-hero-end));
     margin-top: 80px;
+    border-radius: 32px;
+    box-shadow: var(--app-shadow);
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .feature {
+        border-radius: 24px;
+        margin-left: 0.75rem;
+        margin-right: 0.75rem;
+    }
 }

@@ -1,38 +1,23 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Blog images - stored in public/ folder
     match /public/{imageId} {
-      allow read: if true;  // Anyone can read blog images
-      allow write: if request.auth != null &&  // Must be authenticated
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
-                     request.resource.contentType.matches('image/.*'); // Must be an image
+      allow read: if true;
+      allow write: if false;
     }
-    
-    // Job banners - stored in Banners/ folder
+
     match /Banners/{imageId} {
-      allow read: if true;  // Anyone can read banners
-      allow write: if request.auth != null &&  // Must be authenticated
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
-                     request.resource.contentType.matches('image/.*'); // Must be an image
+      allow read: if true;
+      allow write: if false;
     }
-    
-    // Allow listing Banners folder for authenticated users
-    match /Banners {
-      allow list: if request.auth != null;  // Only authenticated users can list banners
-    }
-    
-    // Legacy blog-images path (for backward compatibility)
+
     match /blog-images/{imageId} {
-      allow read: if true;  // Anyone can read blog images
-      allow write: if request.auth != null &&  // Must be authenticated
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
-                     request.resource.contentType.matches('image/.*'); // Must be an image
+      allow read: if true;
+      allow write: if false;
     }
-    
-    // Default rule for all other paths - requires authentication
+
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

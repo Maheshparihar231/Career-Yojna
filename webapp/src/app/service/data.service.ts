@@ -4,20 +4,14 @@ import { Job } from '../data/jobs';
 import {
   Observable,
   map,
-  from,
   shareReplay,
-  debounceTime,
-  distinctUntilChanged,
-  mergeMap,
-  Subject,
   BehaviorSubject,
   retry,
   catchError,
   of,
-  tap,
-  finalize
+  tap
 } from 'rxjs';
-import firebase from 'firebase/compat/app';
+import { APP_CONFIG } from '../config/app-config';
 
 export interface BlogPost {
   id?: string;
@@ -40,16 +34,13 @@ export interface BlogPost {
   providedIn: 'root'
 })
 export class DataService {
-  private readonly JOBS_COLLECTION = '/Jobs';
-  private readonly BLOGS_COLLECTION = '/Blogs';
+  private readonly JOBS_COLLECTION = APP_CONFIG.firestore.collections.jobs;
+  private readonly BLOGS_COLLECTION = APP_CONFIG.firestore.collections.blogs;
   private readonly RETRY_CONFIG = { count: 3, delay: 1000 };
 
   // Caching & State Management
   private allJobs$!: Observable<Job[]>;
   private allBlogs$!: Observable<BlogPost[]>;
-  private jobViewUpdates$ = new Subject<string>();
-  private blogViewUpdates$ = new Subject<string>();
-  private blogLikeUpdates$ = new Subject<string>();
 
   // Loading & Error States
   public isLoadingJobs$ = new BehaviorSubject<boolean>(false);
@@ -59,7 +50,6 @@ export class DataService {
 
   constructor(private afs: AngularFirestore) {
     this.initializeCaching();
-    this.initializeViewTracking();
   }
 
   isInitialized(): boolean {
@@ -67,7 +57,7 @@ export class DataService {
   }
 
   /**
-   * Initialize caching and view tracking streams
+   * Initialize cached read-only data streams.
    */
   private initializeCaching(): void {
     // Cache jobs with shareReplay
@@ -96,102 +86,7 @@ export class DataService {
   }
 
   /**
-   * Initialize debounced view and like tracking
-   */
-  private initializeViewTracking(): void {
-    // Debounce job view updates - group within 5s window
-    this.jobViewUpdates$
-      .pipe(
-        debounceTime(5000),
-        distinctUntilChanged(),
-        mergeMap(jobId => this.performJobViewUpdate(jobId))
-      )
-      .subscribe();
-
-    // Debounce blog view updates
-    this.blogViewUpdates$
-      .pipe(
-        debounceTime(5000),
-        distinctUntilChanged(),
-        mergeMap(blogId => this.performBlogViewUpdate(blogId))
-      )
-      .subscribe();
-
-    // Debounce blog like updates - group within 2s window
-    this.blogLikeUpdates$
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged(),
-        mergeMap(blogId => this.performBlogLikeUpdate(blogId))
-      )
-      .subscribe();
-  }
-
-  // ===================== JOBS CRUD OPERATIONS =====================
-
-  /**
-   * Create a new job posting
-   */
-  addJob(job: Job): Observable<any> {
-    job.id = this.afs.createId();
-    this.isLoadingJobs$.next(true);
-    
-    return from(
-      this.afs.collection(this.JOBS_COLLECTION).add({
-        ...job,
-        post_date: new Date(),
-        views: 0
-      })
-    ).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error adding job:', error);
-        this.jobsError$.next(error.message || 'Failed to add job');
-        throw error;
-      }),
-      finalize(() => this.isLoadingJobs$.next(false))
-    );
-  }
-
-  /**
-   * Update an existing job
-   */
-  updateJob(job: Job): Observable<void> {
-    if (!job.id) throw new Error('Job ID is required for update');
-    
-    return from(
-      this.afs.doc(`${this.JOBS_COLLECTION}/${job.id}`).update({
-        ...job,
-        lastModified: new Date()
-      })
-    ).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error updating job:', error);
-        this.jobsError$.next(error.message || 'Failed to update job');
-        throw error;
-      })
-    );
-  }
-
-  /**
-   * Delete a job posting
-   */
-  deleteJob(job: Job): Observable<void> {
-    if (!job.id) throw new Error('Job ID is required for deletion');
-    
-    return from(this.afs.doc(`${this.JOBS_COLLECTION}/${job.id}`).delete()).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error deleting job:', error);
-        this.jobsError$.next(error.message || 'Failed to delete job');
-        throw error;
-      })
-    );
-  }
-
-  /**
-   * Get all jobs with caching
+   * Get all jobs with caching.
    */
   getAllJobs(): Observable<Job[]> {
     this.isLoadingJobs$.next(true);
@@ -211,12 +106,9 @@ export class DataService {
   }
 
   /**
-   * Get job by ID with view tracking
+   * Get job by ID.
    */
   getJobById(jobId: string): Observable<Job | undefined> {
-    // Emit view update (debounced)
-    this.jobViewUpdates$.next(jobId);
-    
     return this.afs.collection(this.JOBS_COLLECTION).doc(jobId).valueChanges().pipe(
       map(data => data ? this.transformJob(data as Record<string, any>) : undefined),
       catchError(error => {
@@ -323,99 +215,9 @@ export class DataService {
   }
 
   /**
-   * Private: Perform actual job view update (called after debounce)
-   */
-  private performJobViewUpdate(jobId: string): Observable<void> {
-    const jobRef = this.afs.collection(this.JOBS_COLLECTION).doc(jobId);
-    
-    return from(
-      jobRef.update({
-        views: firebase.firestore.FieldValue.increment(1),
-        last_viewed: new Date()
-      })
-    ).pipe(
-      catchError(error => {
-        console.error('Error updating job views:', error);
-        return of(void 0);
-      })
-    );
-  }
-
-  // ===================== BLOGS CRUD OPERATIONS =====================
-
-  /**
-   * Add new blog post
-   */
-  addBlog(blog: BlogPost): Observable<string> {
-    const id = this.afs.createId();
-    this.isLoadingBlogs$.next(true);
-    
-    return from(
-      this.afs.collection(this.BLOGS_COLLECTION).doc(id).set({
-        ...blog,
-        id,
-        date: new Date(),
-        views: 0,
-        likes: 0,
-        isPublished: true,
-        lastModified: new Date()
-      })
-    ).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error adding blog:', error);
-        this.blogsError$.next(error.message || 'Failed to add blog');
-        throw error;
-      }),
-      finalize(() => this.isLoadingBlogs$.next(false)),
-      map(() => id)
-    );
-  }
-
-  /**
-   * Update blog post
-   */
-  updateBlog(blog: BlogPost): Observable<void> {
-    if (!blog.id) throw new Error('Blog ID is required for update');
-    
-    return from(
-      this.afs.doc(`${this.BLOGS_COLLECTION}/${blog.id}`).update({
-        ...blog,
-        lastModified: new Date()
-      })
-    ).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error updating blog:', error);
-        this.blogsError$.next(error.message || 'Failed to update blog');
-        throw error;
-      })
-    );
-  }
-
-  /**
-   * Delete blog post
-   */
-  deleteBlog(blog: BlogPost): Observable<void> {
-    if (!blog.id) throw new Error('Blog ID is required for deletion');
-    
-    return from(this.afs.doc(`${this.BLOGS_COLLECTION}/${blog.id}`).delete()).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error deleting blog:', error);
-        this.blogsError$.next(error.message || 'Failed to delete blog');
-        throw error;
-      })
-    );
-  }
-
-  /**
-   * Get blog by ID with view tracking
+   * Get blog by ID.
    */
   getBlogById(blogId: string): Observable<BlogPost | undefined> {
-    // Emit view update (debounced)
-    this.blogViewUpdates$.next(blogId);
-    
     return this.afs.collection(this.BLOGS_COLLECTION).doc(blogId).valueChanges().pipe(
       map(data => data ? this.transformBlog(data as Record<string, any>, blogId) : undefined),
       catchError(error => {
@@ -478,31 +280,6 @@ export class DataService {
           return of([]);
         })
       );
-  }
-
-  /**
-   * Like blog (debounced)
-   */
-  likeBlog(blogId: string): void {
-    this.blogLikeUpdates$.next(blogId);
-  }
-
-  /**
-   * Private: Perform actual blog like update (called after debounce)
-   */
-  private performBlogLikeUpdate(blogId: string): Observable<void> {
-    const blogRef = this.afs.collection(this.BLOGS_COLLECTION).doc(blogId);
-    
-    return from(
-      blogRef.update({
-        likes: firebase.firestore.FieldValue.increment(1)
-      })
-    ).pipe(
-      catchError(error => {
-        console.error('Error updating blog likes:', error);
-        return of(void 0);
-      })
-    );
   }
 
   /**
@@ -580,24 +357,6 @@ export class DataService {
   }
 
   /**
-   * Toggle blog publish status
-   */
-  toggleBlogPublishStatus(blogId: string, isPublished: boolean): Observable<void> {
-    return from(
-      this.afs.doc(`${this.BLOGS_COLLECTION}/${blogId}`).update({
-        isPublished,
-        lastModified: new Date()
-      })
-    ).pipe(
-      retry(this.RETRY_CONFIG),
-      catchError(error => {
-        console.error('Error toggling publish status:', error);
-        throw error;
-      })
-    );
-  }
-
-  /**
    * Private: Create blogs data source
    */
   private createBlogsSource(): Observable<BlogPost[]> {
@@ -638,22 +397,4 @@ export class DataService {
     } as BlogPost;
   }
 
-  /**
-   * Private: Perform actual blog view update (called after debounce)
-   */
-  private performBlogViewUpdate(blogId: string): Observable<void> {
-    const blogRef = this.afs.collection(this.BLOGS_COLLECTION).doc(blogId);
-    
-    return from(
-      blogRef.update({
-        views: firebase.firestore.FieldValue.increment(1),
-        lastViewed: new Date()
-      })
-    ).pipe(
-      catchError(error => {
-        console.error('Error updating blog views:', error);
-        return of(void 0);
-      })
-    );
-  }
 }

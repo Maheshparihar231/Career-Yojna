@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
 import { AdService } from 'src/app/service/ad.service';
+import { environment } from 'src/app/environment/environment';
 
 @Component({
   selector: 'app-ad-placeholder',
@@ -11,6 +12,7 @@ import { AdService } from 'src/app/service/ad.service';
            [attr.data-ad-client]="adService.getPublisherId()"
            [attr.data-ad-slot]="getAdSlot()"
            data-ad-format="auto"
+           [attr.data-adtest]="isTestMode() ? 'on' : null"
            data-full-width-responsive="true">
       </ins>
     </div>
@@ -62,7 +64,6 @@ import { AdService } from 'src/app/service/ad.service';
 })
 export class AdPlaceholderComponent implements OnInit, AfterViewInit {
   @Input() placement: 'header' | 'sidebar' | 'content' | 'footer' = 'header';
-  @ViewChild('adElement') adElement: ElementRef;
 
   constructor(public adService: AdService) {}
 
@@ -77,8 +78,12 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
     if (this.adService.isAdSenseEnabled()) {
       setTimeout(() => {
         this.adService.pushAds();
-      }, 100);
+      }, 200);
     }
+  }
+
+  isTestMode(): boolean {
+    return !environment.production;
   }
 
   /**

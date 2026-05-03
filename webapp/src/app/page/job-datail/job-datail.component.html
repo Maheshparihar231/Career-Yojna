@@ -1,10 +1,10 @@
-<div class="job-details min-h-screen bg-neutral-50">
+<div class="job-details page-shell min-h-screen">
     <!-- Breadcrumb -->
-    <nav class="bg-white shadow-sm">
+    <nav class="surface-panel">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center">
                 <button onclick="history.back()" 
-                        class="text-neutral-600 hover:text-primary-600 transition-colors p-2 rounded-full hover:bg-primary-50">
+                    class="theme-soft hover:text-primary-600 transition-colors p-2 rounded-full hover:bg-primary-50">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
                 <div class="ml-4 text-sm text-neutral-600">
@@ -15,12 +15,17 @@
             </div>
         </div>
     </nav>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
+        <app-ad-placeholder placement="header" class="block"></app-ad-placeholder>
+    </div>
+
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main Content -->
             <div class="lg:col-span-2">
                 <!-- Job Header -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg border border-neutral-100 hover:shadow-xl transition-shadow duration-300 mb-6">
+                <div class="theme-card rounded-2xl p-6 hover:shadow-xl transition-shadow duration-300 mb-6">
                     <div class="flex items-start gap-6">
                         <div class="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border">
                             <img [src]="job?.img_url || defaultImageUrl" 
@@ -59,7 +64,7 @@
                     </div>
                 </div>
                 <!-- Job Description -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                <div class="theme-card rounded-2xl p-6 mb-6">
                     <h2 class="text-lg font-semibold mb-4">About the Role</h2>
                     <p class="text-neutral-700 whitespace-pre-line mb-6">{{job?.description}}</p>
                     <!-- Requirements -->
@@ -99,7 +104,7 @@
                     </div>
                 </div>
                 <!-- Company Description -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                <div class="theme-card rounded-2xl p-6 mb-6">
                     <h2 class="text-lg font-semibold mb-4">About {{job?.company_name}}</h2>
                     <p class="text-neutral-700">
                         {{job?.company_name}} is looking for a talented {{job?.role}} to join our team.
@@ -109,7 +114,7 @@
             <!-- Sidebar -->
             <div class="lg:col-span-1">
                 <!-- Quick Apply -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6 sticky top-6">
+                <div class="theme-card rounded-2xl p-6 mb-6 sticky top-6">
                     <h2 class="text-lg font-semibold mb-4">Quick Apply</h2>
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 text-neutral-700">
@@ -134,6 +139,8 @@
                         </a>
                     </div>
                 </div>
+
+                <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder>
             </div>
         </div>
     </div>

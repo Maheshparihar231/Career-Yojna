@@ -1,7 +1,11 @@
-<app-navbar></app-navbar>
+<div class="app-shell" [attr.data-theme]="theme">
+  <app-navbar [theme]="theme" (themeToggle)="toggleTheme()"></app-navbar>
 
-<router-outlet></router-outlet>
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
 
-<div class="box mt-9">
-  <app-footer></app-footer>
+  <div class="app-footer-shell">
+    <app-footer></app-footer>
+  </div>
 </div>

@@ -2,9 +2,13 @@
     transition: all 0.3s ease;
 }
 
+.theme-chip {
+    border: 1px solid var(--app-border);
+}
+
 .blog-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--app-shadow-soft);
 }
 
 .category-badge {

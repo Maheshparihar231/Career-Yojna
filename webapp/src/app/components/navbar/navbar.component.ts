@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../service/auth.service';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  @Input() theme: 'light' | 'dark' = 'light';
+  @Output() themeToggle = new EventEmitter<void>();
   isLoggedIn = false;
   currentUser: User | null = null;
   mobileMenuOpen = false;
@@ -38,10 +40,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/search'], { state: { data } });
   }
 
-  goToData() {
-    this.router.navigate(['/data']);
-  }
-
   async signOut() {
     try {
       await this.authService.signOut();
@@ -56,5 +54,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   closeMobileMenu() {
     this.mobileMenuOpen = false;
+  }
+
+  onThemeToggle(): void {
+    this.themeToggle.emit();
   }
 }

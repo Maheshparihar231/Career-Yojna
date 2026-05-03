@@ -1,10 +1,10 @@
-<header class="bg-gradient-to-br from-purple-400 via-purple-500 to-primary-600 backdrop-blur-md shadow-2xl sticky top-0 z-50 border-b border-white/10">
+<header class="site-navbar">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8" aria-label="Global">
         <!-- Logo Section -->
         <div class="flex lg:flex-1">
-            <a href="#" class="group flex items-center space-x-3 py-2 px-4 rounded-xl hover:bg-white/15 transition-all duration-300 ease-out transform hover:scale-105">
+            <a routerLink="/home" class="group flex items-center space-x-3 py-2 px-4 rounded-xl nav-brand transition-all duration-300 ease-out transform hover:scale-105">
                 <img class="h-11 w-auto transition-transform duration-300 group-hover:rotate-12" src="../../../assets/images/Career_Yojna.png" alt="Career Yojna">
-                <span class="text-white font-bold text-lg hidden md:block tracking-tight">Career Yojna</span>
+                <span class="font-bold text-lg hidden md:block tracking-tight nav-brand-text">Career Yojna</span>
             </a>            
         </div>
 
@@ -12,7 +12,7 @@
         <div class="flex lg:hidden">
             <button type="button" 
                     (click)="toggleMobileMenu()"
-                    class="inline-flex items-center justify-center rounded-lg p-2.5 text-white hover:bg-white/20 active:bg-white/30 transition-all duration-200 ease-out">
+                    class="inline-flex items-center justify-center rounded-lg p-2.5 nav-icon-button transition-all duration-200 ease-out">
                 <span class="sr-only">{{ mobileMenuOpen ? 'Close' : 'Open' }} main menu</span>
                 <svg *ngIf="!mobileMenuOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -27,48 +27,46 @@
         <div class="hidden lg:flex lg:gap-x-2 items-center">
             <!-- Explore Link -->
             <a routerLink="/search" (click)="closeMobileMenu()"
-               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium text-white/90 hover:text-white hover:bg-white/15 rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5">
+               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5 nav-link">
                 <mat-icon class="text-base leading-none">explore</mat-icon>
                 <span class="leading-none">Explore</span>
-                <div class="absolute bottom-0 left-5 right-5 h-0.5 bg-white/40 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
+                <div class="absolute bottom-0 left-5 right-5 h-0.5 nav-link-underline rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
             </a>
 
             <!-- About Link -->
             <a href="#" (click)="closeMobileMenu()"
-               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium text-white/90 hover:text-white hover:bg-white/15 rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5">
+               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5 nav-link">
                 <mat-icon class="text-base leading-none">info</mat-icon>
                 <span class="leading-none">About Us</span>
-                <div class="absolute bottom-0 left-5 right-5 h-0.5 bg-white/40 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
+                <div class="absolute bottom-0 left-5 right-5 h-0.5 nav-link-underline rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
             </a>
 
             <!-- Blog Link -->
             <a routerLink="/blogs" (click)="closeMobileMenu()"
-               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium text-white/90 hover:text-white hover:bg-white/15 rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5">
+               class="group flex items-center justify-center gap-x-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out transform hover:translate-x-0.5 nav-link">
                 <mat-icon class="text-base leading-none">article</mat-icon>
                 <span class="leading-none">Blog</span>
-                <div class="absolute bottom-0 left-5 right-5 h-0.5 bg-white/40 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
+                <div class="absolute bottom-0 left-5 right-5 h-0.5 nav-link-underline rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></div>
             </a>
+
+            <button type="button" (click)="onThemeToggle()" class="theme-toggle-button" [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+                <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                <span>{{ theme === 'dark' ? 'Light' : 'Dark' }}</span>
+            </button>
 
             <!-- User Section -->
             <div *ngIf="isLoggedIn" class="flex items-center gap-x-3 ml-4 pl-4 border-l border-white/20">
-                <!-- Dashboard Button -->
-                <button (click)="goToData()"
-                        class="group flex items-center gap-x-2 px-5 py-2.5 text-sm font-medium text-white/90 hover:text-white hover:bg-white/15 rounded-lg transition-all duration-300 ease-out transform hover:scale-105">
-                    <mat-icon class="text-lg">dashboard</mat-icon>
-                    <span class="hidden lg:inline">Dashboard</span>
-                </button>
-
                 <!-- User Profile Menu -->
                 <div class="relative">
                     <button [matMenuTriggerFor]="userMenu"
-                            class="group flex items-center gap-x-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 text-sm font-medium text-white rounded-lg transition-all duration-300 ease-out border border-white/10 hover:border-white/30 active:scale-95">
+                            class="group flex items-center gap-x-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out border active:scale-95 user-menu-button">
                         <div class="flex items-center gap-x-2">
-                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-300 to-primary-300 flex items-center justify-center">
-                                <mat-icon class="text-sm text-white/80">account_circle</mat-icon>
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-sky-300 to-indigo-300 flex items-center justify-center">
+                                <mat-icon class="text-sm text-slate-900/80">account_circle</mat-icon>
                             </div>
-                            <span class="max-w-xs truncate font-semibold hidden xl:inline">{{ currentUser?.displayName || currentUser?.email }}</span>
+                            <span class="max-w-xs truncate font-semibold hidden xl:inline user-menu-text">{{ currentUser?.displayName || currentUser?.email }}</span>
                         </div>
-                        <svg class="h-4 w-4 text-white/60 transition-transform duration-300 group-hover:text-white/80" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-4 w-4 user-menu-caret transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
                                 d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
                                 clip-rule="evenodd" />
@@ -96,37 +94,36 @@
     </nav>
 
     <!-- Mobile Navigation Menu -->
-    <div *ngIf="mobileMenuOpen" class="lg:hidden bg-purple-500/95 backdrop-blur-sm border-t border-white/10 overflow-hidden">
+    <div *ngIf="mobileMenuOpen" class="lg:hidden mobile-nav overflow-hidden">
         <div class="px-4 py-4 space-y-3">
             <!-- Mobile Navigation Links -->
             <a routerLink="/search" (click)="closeMobileMenu()"
-               class="flex items-center gap-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/15 transition-all duration-200">
+               class="flex items-center gap-x-3 px-4 py-3 rounded-lg mobile-nav-link transition-all duration-200">
                 <mat-icon class="text-lg">explore</mat-icon>
                 <span class="font-medium">Explore</span>
             </a>
 
             <a href="#" (click)="closeMobileMenu()"
-               class="flex items-center gap-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/15 transition-all duration-200">
+               class="flex items-center gap-x-3 px-4 py-3 rounded-lg mobile-nav-link transition-all duration-200">
                 <mat-icon class="text-lg">info</mat-icon>
                 <span class="font-medium">About Us</span>
             </a>
 
             <a routerLink="/blogs" (click)="closeMobileMenu()"
-               class="flex items-center gap-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/15 transition-all duration-200">
+               class="flex items-center gap-x-3 px-4 py-3 rounded-lg mobile-nav-link transition-all duration-200">
                 <mat-icon class="text-lg">article</mat-icon>
                 <span class="font-medium">Blog</span>
             </a>
+
+            <button type="button" (click)="onThemeToggle()" class="w-full flex items-center gap-x-3 px-4 py-3 rounded-lg mobile-nav-link transition-all duration-200">
+                <mat-icon class="text-lg">{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                <span class="font-medium">{{ theme === 'dark' ? 'Switch to Light' : 'Switch to Dark' }}</span>
+            </button>
 
             <!-- Mobile User Section -->
             <div *ngIf="isLoggedIn" class="border-t border-white/20 pt-4 mt-4 space-y-3">
                 <p class="text-xs uppercase tracking-wider font-semibold text-white/70 px-4">Account</p>
                 
-                <button (click)="goToData(); closeMobileMenu()"
-                        class="w-full flex items-center gap-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/15 transition-all duration-200">
-                    <mat-icon class="text-lg">dashboard</mat-icon>
-                    <span class="font-medium">Dashboard</span>
-                </button>
-
                 <div class="px-4 py-2 bg-white/10 rounded-lg">
                     <p class="text-xs text-white/70 mb-2">Logged in as:</p>
                     <p class="text-sm font-medium text-white truncate">{{ currentUser?.displayName || currentUser?.email }}</p>
