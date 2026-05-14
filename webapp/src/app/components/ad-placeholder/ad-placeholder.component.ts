@@ -22,48 +22,56 @@ import { environment } from 'src/app/environment/environment';
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 1rem 0;
-      min-height: 100px;
     }
 
     .ad-header {
-      margin: 1rem 0;
-      background: #f9f9f9;
-      padding: 0.5rem;
-      border-radius: 8px;
+      margin: 0.5rem 0;
+      background: var(--color-surface-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      min-height: 50px;
     }
 
     .ad-sidebar {
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
+      background: var(--color-surface-muted);
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
     }
 
     .ad-content {
-      margin: 2rem 0;
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 8px;
+      margin: 1.5rem 0;
+      background: var(--color-surface-muted);
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
     }
 
     .ad-footer {
-      margin: 1rem 0;
-      background: #f9f9f9;
-      padding: 0.5rem;
-      border-radius: 8px;
+      margin: 0.5rem 0;
+      background: var(--color-surface-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      min-height: 50px;
     }
 
-    /* Mobile responsive */
-    @media (max-width: 640px) {
-      .ad-container {
-        min-height: 80px;
-      }
+    .ad-side {
+      position: sticky;
+      top: 5rem;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem;
+      min-height: 600px;
+      width: 160px;
+    }
+
+    @media (max-width: 1440px) {
+      .ad-side { display: none; }
     }
   `]
 })
 export class AdPlaceholderComponent implements OnInit, AfterViewInit {
-  @Input() placement: 'header' | 'sidebar' | 'content' | 'footer' = 'header';
+  @Input() placement: 'header' | 'sidebar' | 'content' | 'footer' | 'side' = 'header';
 
   constructor(public adService: AdService) {}
 
@@ -90,11 +98,12 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
    * Get ad slot based on placement
    */
   getAdSlot(): string {
-    const placement = {
+    const placement: Record<string, string> = {
       header: this.adService.getAdUnit('headerBanner').slot,
       sidebar: this.adService.getAdUnit('sidebarTop').slot,
       content: this.adService.getAdUnit('contentMiddle').slot,
-      footer: this.adService.getAdUnit('footerBanner').slot
+      footer: this.adService.getAdUnit('footerBanner').slot,
+      side: this.adService.getAdUnit('sidebarTop').slot
     };
     return placement[this.placement] || '';
   }
@@ -103,12 +112,13 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
    * Get ad container styles based on placement
    */
   getAdStyle(): string {
-    const styles = {
-      header: 'width:100%; height:90px;',
+    const styles: Record<string, string> = {
+      header: 'width:100%; height:30px;',
       sidebar: 'display:block; width:300px; height:250px;',
-      content: 'display:block; width:300px; height:250px;',
-      footer: 'width:100%; height:90px;'
+      content: 'display:block; width:100%; height:90px;',
+      footer: 'width:100%; height:50px;',
+      side: 'display:block; width:160px; height:600px;'
     };
-    return styles[this.placement] || styles.header;
+    return styles[this.placement] || styles['header'];
   }
 }

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Job } from 'src/app/data/jobs';
 import { DataService } from 'src/app/service/data.service';
+import { SeoService } from 'src/app/service/seo.service';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -28,6 +29,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   // Filters
   searchQuery: string = '';
+  typeFilter: string = '';
 
   // Sorting
   sortBy: 'latest' | 'salary' | 'views' = 'latest';
@@ -37,7 +39,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
 
-  constructor(private route: ActivatedRoute, private router: Router, private dataService: DataService) {
+  constructor(private route: ActivatedRoute, private router: Router, private dataService: DataService, private seo: SeoService) {
     const currentNavigation = this.router.getCurrentNavigation();
     if (currentNavigation?.extras.state) {
       const data = currentNavigation.extras.state as { data: { key1: string } };
@@ -46,6 +48,20 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Read query params for type filter
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const type = (params['type'] || '').toLowerCase();
+        if (type && type !== this.typeFilter) {
+          this.typeFilter = type;
+          this.currentPage = 1;
+          if (this.jobList.length > 0) {
+            this.applyFilters();
+          }
+        }
+      });
+
     // Debounced search
     this.searchSubject$
       .pipe(
@@ -58,6 +74,13 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.currentPage = 1;
         this.applyFilters();
       });
+
+    this.seo.updatePage({
+      title: 'Browse Off-Campus Jobs - Full-time, Internship & Remote',
+      description: 'Search and filter the latest off-campus job openings for freshers. Find full-time, internship, remote, and part-time positions from verified companies.',
+      keywords: 'search jobs, off campus openings, fresher job listings, internship opportunities',
+      canonicalPath: '/search'
+    });
 
     this.getAllJobs();
   }
@@ -119,6 +142,18 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   private applyFilters(): void {
     let filtered = [...this.jobList];
+
+    // Type filter (from query param)
+    if (this.typeFilter) {
+      filtered = filtered.filter(job => {
+        const jobType = (job.job_type || '').toLowerCase();
+        const isRemote = (job.remote || '').toLowerCase();
+        if (this.typeFilter === 'remote') {
+          return jobType === 'remote' || isRemote === 'yes' || isRemote === 'true';
+        }
+        return jobType.includes(this.typeFilter);
+      });
+    }
 
     // Search filter
     if (this.searchQuery.trim()) {
@@ -222,9 +257,24 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   resetFilters(): void {
     this.searchQuery = '';
+    this.typeFilter = '';
     this.sortBy = 'latest';
     this.currentPage = 1;
     this.pageSize = 10;
+    this.router.navigate([], { queryParams: {} });
+    this.applyFilters();
+  }
+
+  /**
+   * Set type filter and update query param
+   */
+  onTypeFilterChange(type: string): void {
+    this.typeFilter = type;
+    this.currentPage = 1;
+    this.router.navigate([], {
+      queryParams: type ? { type } : {},
+      queryParamsHandling: type ? 'merge' : ''
+    });
     this.applyFilters();
   }
 

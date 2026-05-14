@@ -9,7 +9,7 @@ type ThemeMode = 'light' | 'dark';
 })
 export class AppComponent implements OnInit {
   title = 'webapp';
-  theme: ThemeMode = 'light';
+  theme: ThemeMode = 'dark';
 
   ngOnInit(): void {
     const storedTheme = this.getStoredTheme();
@@ -22,11 +22,14 @@ export class AppComponent implements OnInit {
 
   private getStoredTheme(): ThemeMode {
     if (typeof window === 'undefined') {
-      return 'light';
+      return 'dark';
     }
 
     const storedTheme = window.localStorage.getItem('career-yojna-theme');
-    return storedTheme === 'dark' ? 'dark' : 'light';
+    if (storedTheme === 'light' || storedTheme === 'dark') {
+      return storedTheme;
+    }
+    return 'dark';
   }
 
   private applyTheme(theme: ThemeMode): void {

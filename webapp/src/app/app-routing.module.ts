@@ -8,6 +8,7 @@ import { SearchComponent } from './page/search/search.component';
 import { ProfileComponent } from './page/profile/profile.component';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
 import { BlogsComponent } from './components/blogs/blogs.component';
+import { FaqComponent } from './page/faq/faq.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,7 @@ const routes: Routes = [
   // { path: "manage", component: DataComponent },
   { path: "job/:id", component: JobDatailComponent },
   { path: "blogs", component: BlogsComponent },
+  { path: "faq", component: FaqComponent },
 ];
 
 @NgModule({

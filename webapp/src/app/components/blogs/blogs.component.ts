@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService, BlogPost } from '../../service/data.service';
+import { SeoService } from '../../service/seo.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -31,9 +32,16 @@ export class BlogsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private seo: SeoService) {}
 
   ngOnInit() {
+    this.seo.updatePage({
+      title: 'Career Blog - Tips, Guides & Job Market Insights',
+      description: 'Read career advice, interview tips, resume guides, and job market insights for freshers and graduates on Career Yojna blog.',
+      keywords: 'career tips, interview preparation, resume guide, fresher career advice, job market India',
+      canonicalPath: '/blogs'
+    });
+
     // Debounced search
     this.searchSubject$
       .pipe(

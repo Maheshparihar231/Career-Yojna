@@ -28,7 +28,7 @@
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-2 sm:mb-3 brand-heading">
-                    Off-Campus Job Openings
+                    {{ typeFilter ? (typeFilter | titlecase) + ' Jobs' : 'Off-Campus Job Openings' }}
                 </h1>
                 <p class="text-sm sm:text-base md:text-lg text-neutral-600 max-w-2xl">
                     <span class="hidden sm:inline">Find your perfect opportunity from {{ jobList.length || 0 }} carefully curated job listings</span>
@@ -54,6 +54,40 @@
                         (keyup)="onSearchChange($any($event.target).value)"
                         class="w-full px-4 py-3 rounded-lg border text-sm sm:text-base transition-all theme-input" />
                     <mat-icon class="absolute right-3 top-3 text-neutral-400 text-sm">search</mat-icon>
+                </div>
+
+                <!-- Type Filter Chips -->
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        (click)="onTypeFilterChange('')"
+                        [ngClass]="!typeFilter ? 'bg-primary-600 text-white border-primary-600' : 'bg-transparent border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-600'"
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors">
+                        All Jobs
+                    </button>
+                    <button
+                        (click)="onTypeFilterChange('full-time')"
+                        [ngClass]="typeFilter === 'full-time' ? 'bg-primary-600 text-white border-primary-600' : 'bg-transparent border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-600'"
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors">
+                        Full-time
+                    </button>
+                    <button
+                        (click)="onTypeFilterChange('internship')"
+                        [ngClass]="typeFilter === 'internship' ? 'bg-primary-600 text-white border-primary-600' : 'bg-transparent border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-600'"
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors">
+                        Internship
+                    </button>
+                    <button
+                        (click)="onTypeFilterChange('remote')"
+                        [ngClass]="typeFilter === 'remote' ? 'bg-primary-600 text-white border-primary-600' : 'bg-transparent border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-600'"
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors">
+                        Remote
+                    </button>
+                    <button
+                        (click)="onTypeFilterChange('part-time')"
+                        [ngClass]="typeFilter === 'part-time' ? 'bg-primary-600 text-white border-primary-600' : 'bg-transparent border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-600'"
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors">
+                        Part-time
+                    </button>
                 </div>
 
                 <!-- Sort & Page Size Controls -->
@@ -170,12 +204,6 @@
                                     <img [src]="job.img_url" class="w-full h-full object-contain"
                                         [alt]="job.company_name + ' logo'" (error)="job.img_url = defaultImageUrl"
                                         loading="lazy" />
-                                </div>
-                                <!-- New Job Badge -->
-                                <div *ngIf="isNewJob(job.post_date)" class="absolute -top-1 -right-1">
-                                    <div class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold shadow-md">
-                                        <mat-icon class="text-xs">star</mat-icon>
-                                    </div>
                                 </div>
                             </div>
 
@@ -312,7 +340,7 @@
                 </div>
 
                 <!-- Ad Banner - Sidebar Top -->
-                <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder>
+                <!-- <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder> -->
 
                 <!-- Loading State for Top Jobs -->
                 <div *ngIf="isLoading" class="space-y-3">
@@ -336,16 +364,6 @@
                 <div class="space-y-3">
                     <div *ngFor="let job of top5Jobs" (click)="navigateToJob(job.id)"
                         class="group relative bg-white rounded-xl border border-neutral-200 hover:border-primary-300 transition-all duration-300 hover:shadow-md overflow-hidden cursor-pointer">
-
-                        <!-- New Badge Overlay -->
-                        <div *ngIf="isNewJob(job.post_date)" class="absolute top-2 right-2 z-10">
-                            <span
-                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold shadow-lg">
-                                <mat-icon class="text-xs">new_releases</mat-icon>
-                                New
-                            </span>
-                        </div>
-
                         <!-- Card Content -->
                         <div class="p-4">
                             <!-- Company Info -->
@@ -404,14 +422,14 @@
 
                         <!-- Hover Indicator -->
                         <div
-                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left">
+                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left">
                         </div>
                     </div>
                 </div>
 
                 <!-- View More Button -->
                 <button (click)="getAllJobs()"
-                    class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-primary-500 to-blue-500 text-white font-semibold text-sm hover:shadow-lg hover:from-primary-600 hover:to-blue-600 transition-all duration-300">
+                    class="w-full py-3 px-4 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">
                     <span class="flex items-center justify-center gap-2">
                         <mat-icon class="text-base">arrow_forward</mat-icon>
                         View All Jobs

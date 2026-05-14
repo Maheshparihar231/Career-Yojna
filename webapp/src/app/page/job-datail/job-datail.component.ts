@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Job } from 'src/app/data/jobs';
 import { DataService } from 'src/app/service/data.service';
+import { SeoService } from 'src/app/service/seo.service';
 
 @Component({
   selector: 'app-job-datail',
@@ -13,7 +14,7 @@ export class JobDatailComponent implements OnInit{
   job : Job | null = null;
   defaultImageUrl: string = 'assets/images/default-company.png';
 
-  constructor(private route : ActivatedRoute,private data : DataService){}
+  constructor(private route : ActivatedRoute, private data : DataService, private seo: SeoService){}
   
   ngOnInit(): void {
     this.route.params.subscribe(param => {
@@ -25,7 +26,14 @@ export class JobDatailComponent implements OnInit{
   getJobData():void {
     this.data.getJobById(this.jobId).subscribe((job:any)=>{
       this.job = job;
-      //console.log(job);
+      if (this.job) {
+        this.seo.updateJobPage(
+          this.job.title,
+          this.job.company_name,
+          this.job.location,
+          this.job.salary
+        );
+      }
     })
   }
 

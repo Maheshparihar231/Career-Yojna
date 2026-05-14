@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /manage/
+
+Sitemap: https://careeryojna.com/sitemap.xml

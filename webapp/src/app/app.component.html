@@ -1,9 +1,21 @@
 <div class="app-shell" [attr.data-theme]="theme">
   <app-navbar [theme]="theme" (themeToggle)="toggleTheme()"></app-navbar>
 
-  <main class="app-main">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="app-body">
+    <!-- Left side ad (desktop only) -->
+    <aside class="app-side-ad app-side-ad--left">
+      <app-ad-placeholder placement="side"></app-ad-placeholder>
+    </aside>
+
+    <main class="app-main">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Right side ad (desktop only) -->
+    <aside class="app-side-ad app-side-ad--right">
+      <app-ad-placeholder placement="side"></app-ad-placeholder>
+    </aside>
+  </div>
 
   <div class="app-footer-shell">
     <app-footer></app-footer>

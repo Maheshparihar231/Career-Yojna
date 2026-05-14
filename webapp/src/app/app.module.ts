@@ -46,6 +46,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { AdPlaceholderComponent } from './components/ad-placeholder/ad-placeholder.component';
+import { FaqComponent } from './page/faq/faq.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { AdPlaceholderComponent } from './components/ad-placeholder/ad-placehold
     WorkupdateComponent,
     JobDatailComponent,
     BlogsComponent,
-    AdPlaceholderComponent
+    AdPlaceholderComponent,
+    FaqComponent
   ],
   imports: [
     BrowserModule,
