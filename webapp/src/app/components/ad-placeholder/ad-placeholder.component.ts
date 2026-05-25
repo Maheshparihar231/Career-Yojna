@@ -6,8 +6,19 @@ import { environment } from 'src/app/environment/environment';
   selector: 'app-ad-placeholder',
   template: `
     <div class="ad-container" [ngClass]="'ad-' + placement" *ngIf="adService.isAdSenseEnabled()">
-      <!-- Google AdSense Ad -->
-      <ins class="adsbygoogle"
+      <!-- Google AdSense In-Feed Ad -->
+      <ins *ngIf="placement === 'infeed'"
+           class="adsbygoogle"
+           style="display:block"
+           [attr.data-ad-client]="adService.getPublisherId()"
+           [attr.data-ad-slot]="getAdSlot()"
+           data-ad-format="fluid"
+           data-ad-layout-key="-fb+5w+4e-db+86"
+           [attr.data-adtest]="isTestMode() ? 'on' : null">
+      </ins>
+      <!-- Google AdSense Display Ad -->
+      <ins *ngIf="placement !== 'infeed'"
+           class="adsbygoogle"
            [attr.style]="getAdStyle()"
            [attr.data-ad-client]="adService.getPublisherId()"
            [attr.data-ad-slot]="getAdSlot()"
@@ -65,13 +76,18 @@ import { environment } from 'src/app/environment/environment';
       width: 160px;
     }
 
+    .ad-infeed {
+      margin: 0.75rem 0;
+      width: 100%;
+    }
+
     @media (max-width: 1440px) {
       .ad-side { display: none; }
     }
   `]
 })
 export class AdPlaceholderComponent implements OnInit, AfterViewInit {
-  @Input() placement: 'header' | 'sidebar' | 'content' | 'footer' | 'side' = 'header';
+  @Input() placement: 'header' | 'sidebar' | 'content' | 'footer' | 'side' | 'infeed' = 'header';
 
   constructor(public adService: AdService) {}
 
@@ -86,7 +102,7 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
     if (this.adService.isAdSenseEnabled()) {
       setTimeout(() => {
         this.adService.pushAds();
-      }, 200);
+      }, 600);
     }
   }
 
@@ -103,7 +119,8 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
       sidebar: this.adService.getAdUnit('sidebarTop').slot,
       content: this.adService.getAdUnit('contentMiddle').slot,
       footer: this.adService.getAdUnit('footerBanner').slot,
-      side: this.adService.getAdUnit('sidebarTop').slot
+      side: this.adService.getAdUnit('sidebarTop').slot,
+      infeed: this.adService.getAdUnit('infeed').slot
     };
     return placement[this.placement] || '';
   }
@@ -113,11 +130,12 @@ export class AdPlaceholderComponent implements OnInit, AfterViewInit {
    */
   getAdStyle(): string {
     const styles: Record<string, string> = {
-      header: 'width:100%; height:30px;',
+      header: 'display:block; width:100%; height:auto; min-height:50px;',
       sidebar: 'display:block; width:300px; height:250px;',
-      content: 'display:block; width:100%; height:90px;',
-      footer: 'width:100%; height:50px;',
-      side: 'display:block; width:160px; height:600px;'
+      content: 'display:block; width:100%; height:auto; min-height:90px;',
+      footer: 'display:block; width:100%; height:auto; min-height:50px;',
+      side: 'display:block; width:160px; height:600px;',
+      infeed: 'display:block;'
     };
     return styles[this.placement] || styles['header'];
   }

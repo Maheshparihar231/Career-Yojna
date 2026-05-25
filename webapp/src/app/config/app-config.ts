@@ -18,10 +18,11 @@ export const APP_CONFIG = {
     enabled: true,
     publisherId: 'ca-pub-4648282103445528',
     adUnits: {
-      headerBanner: '0000000001',
-      sidebarTop: '0000000002',
-      contentMiddle: '0000000003',
-      footerBanner: '0000000004'
+      headerBanner: '4434214423',
+      sidebarTop: '4434214423',
+      contentMiddle: '4434214423',
+      footerBanner: '4434214423',
+      infeed: '7735165184'
     }
   }
 } as const;

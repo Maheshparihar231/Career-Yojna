@@ -35,6 +35,12 @@ export class AdService {
         format: 'auto',
         slot: APP_CONFIG.adsense.adUnits.footerBanner,
         responsive: true
+      },
+      infeed: {
+        format: 'fluid',
+        slot: APP_CONFIG.adsense.adUnits.infeed,
+        responsive: true,
+        layoutKey: '-fb+5w+4e-db+86'
       }
     }
   };
@@ -67,18 +73,16 @@ export class AdService {
       return;
     }
 
-    // Load AdSense script if not already loaded
-    if (!window.adsbygoogle) {
+    // Script is loaded via index.html <script> tag for reliability.
+    // Fallback: dynamically inject if not already present.
+    const existingScript = document.querySelector(
+      `script[src*="adsbygoogle.js?client=${this.adConfig.publisherId}"]`
+    );
+    if (!existingScript) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${this.adConfig.publisherId}`;
       script.crossOrigin = 'anonymous';
-      script.onload = () => {
-        console.log('AdSense script loaded successfully');
-      };
-      script.onerror = () => {
-        console.error('Failed to load AdSense script');
-      };
       document.head.appendChild(script);
     }
   }
@@ -92,9 +96,7 @@ export class AdService {
     }
 
     try {
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({});
-      }
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {
       console.error('Error pushing ads:', error);
     }

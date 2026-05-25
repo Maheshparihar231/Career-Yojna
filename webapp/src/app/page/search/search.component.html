@@ -193,7 +193,11 @@
 
             <!-- Job Cards -->
             <div class="space-y-3" *ngIf="!isLoading && filteredJobList.length > 0">
-                <div *ngFor="let job of filteredJobList; trackBy: trackByJobId" (click)="navigateToJob(job.id)"
+                <ng-container *ngFor="let job of filteredJobList; let i = index; trackBy: trackByJobId">
+                    <!-- In-feed Ad after every 5th job -->
+                    <app-ad-placeholder *ngIf="i > 0 && i % 5 === 0" placement="infeed" class="block"></app-ad-placeholder>
+
+                    <div (click)="navigateToJob(job.id)"
                     class="group cursor-pointer">
                     <!-- Job Card -->
                     <div class="bg-white rounded-xl border border-neutral-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 overflow-hidden">
@@ -275,6 +279,7 @@
                         </div>
                     </div>
                 </div>
+                </ng-container>
 
                 <!-- Ad Banner - Content Middle -->
                 <app-ad-placeholder placement="content" class="block my-6"></app-ad-placeholder>
