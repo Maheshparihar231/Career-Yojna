@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataService, BlogPost } from '../../service/data.service';
 import { SeoService } from '../../service/seo.service';
 import { Subject } from 'rxjs';
@@ -32,7 +33,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject$ = new Subject<string>();
 
-  constructor(private dataService: DataService, private seo: SeoService) {}
+  constructor(private dataService: DataService, private seo: SeoService, private router: Router) {}
 
   ngOnInit() {
     this.seo.updatePage({
@@ -243,5 +244,11 @@ export class BlogsComponent implements OnInit, OnDestroy {
 
   trackByBlogId(index: number, blog: BlogPost): string {
     return blog.id || index.toString();
+  }
+
+  navigateToBlog(blogId: string | undefined): void {
+    if (blogId) {
+      this.router.navigate(['/blog', blogId]);
+    }
   }
 }

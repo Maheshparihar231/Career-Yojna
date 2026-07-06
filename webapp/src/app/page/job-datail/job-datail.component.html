@@ -3,7 +3,7 @@
     <nav class="surface-panel">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center">
-                <button onclick="history.back()" 
+                <button onclick="history.back()"
                     class="theme-soft hover:text-primary-600 transition-colors p-2 rounded-full hover:bg-primary-50">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
@@ -16,9 +16,9 @@
         </div>
     </nav>
 
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
+    <!-- <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
         <app-ad-placeholder placement="header" class="block"></app-ad-placeholder>
-    </div>
+    </div> -->
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -28,9 +28,8 @@
                 <div class="theme-card rounded-2xl p-6 hover:shadow-xl transition-shadow duration-300 mb-6">
                     <div class="flex items-start gap-6">
                         <div class="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border">
-                            <img [src]="job?.img_url || defaultImageUrl" 
-                                 [alt]="job?.company_name + ' logo'"
-                                 class="w-full h-full object-contain"/>
+                            <img [src]="job?.img_url || defaultImageUrl" [alt]="job?.company_name + ' logo'"
+                                class="w-full h-full object-contain" />
                         </div>
                         <div class="flex-grow">
                             <h1 class="text-2xl font-bold text-neutral-900 mb-2">{{job?.title}}</h1>
@@ -42,8 +41,7 @@
                                 </span>
                             </div>
                             <div class="flex flex-wrap gap-3">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm"
-                                      [ngClass]="{
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm" [ngClass]="{
                                         'bg-blue-50 text-blue-700': job?.job_type === 'Full-time',
                                         'bg-green-50 text-green-700': job?.job_type === 'Part-time',
                                         'bg-purple-50 text-purple-700': job?.job_type === 'Contract'
@@ -51,11 +49,13 @@
                                     <mat-icon class="text-sm mr-1">work</mat-icon>
                                     {{job?.job_type}}
                                 </span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-700">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-700">
                                     <mat-icon class="text-sm mr-1">location_on</mat-icon>
                                     {{job?.location}}
                                 </span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-50 text-green-700">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-50 text-green-700">
                                     <mat-icon class="text-sm mr-1">payments</mat-icon>
                                     ₹{{job?.salary | number}}
                                 </span>
@@ -85,8 +85,8 @@
                     <div class="mb-6" *ngIf="job?.skills_required?.length">
                         <h3 class="text-lg font-semibold mb-3">Required Skills</h3>
                         <div class="flex flex-wrap gap-2">
-                            <span *ngFor="let skill of job?.skills_required" 
-                                  class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                            <span *ngFor="let skill of job?.skills_required"
+                                class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
                                 {{skill}}
                             </span>
                         </div>
@@ -95,8 +95,7 @@
                     <div *ngIf="job?.benefits?.length">
                         <h3 class="text-lg font-semibold mb-3">Benefits</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div *ngFor="let benefit of job?.benefits" 
-                                 class="flex items-center gap-2 text-neutral-700">
+                            <div *ngFor="let benefit of job?.benefits" class="flex items-center gap-2 text-neutral-700">
                                 <mat-icon class="text-green-600">check_circle</mat-icon>
                                 {{benefit}}
                             </div>
@@ -112,9 +111,9 @@
                 </div>
             </div>
             <!-- Sidebar -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 z-10">
                 <!-- Quick Apply -->
-                <div class="theme-card rounded-2xl p-6 mb-6 sticky top-6">
+                <div class="theme-card rounded-2xl p-6 mb-6 sticky top-6 z-50">
                     <h2 class="text-lg font-semibold mb-4">Quick Apply</h2>
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 text-neutral-700">
@@ -133,14 +132,15 @@
                             <mat-icon>event</mat-icon>
                             <span>Deadline: {{job?.deadline | date:'dd MMM, yyyy'}}</span>
                         </div>
-                        <a [href]="job?.apply_link" target="_blank" 
-                           class="w-full bg-primary-600 text-white rounded-lg py-3 px-4 text-center font-medium hover:bg-primary-700 transition-colors inline-block">
+                        <a [href]="job?.apply_link" target="_blank"
+                            class="w-full bg-primary-600 text-white rounded-lg py-3 px-4 text-center font-medium hover:bg-primary-700 transition-colors inline-block">
                             Apply Now
                         </a>
                     </div>
                 </div>
-
-                <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder>
+                <div class="relative z-0">
+                    <app-ad-placeholder placement="sidebar" class="block"></app-ad-placeholder>
+                </div>
             </div>
         </div>
     </div>

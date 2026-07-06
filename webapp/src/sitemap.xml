@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Static Pages -->
   <url>
     <loc>https://careeryojna.com/home</loc>
     <changefreq>daily</changefreq>
@@ -21,6 +22,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://careeryojna.com/search?type=full-time</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://careeryojna.com/blogs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -29,5 +35,77 @@
     <loc>https://careeryojna.com/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/2vLKuHlYsWuzY12eeaKb</loc>
+    <lastmod>2024-03-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/3tPhRs8DA774nZkUFPnM</loc>
+    <lastmod>2024-03-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/7b1Vq6GFuxkC6ALjFVHQ</loc>
+    <lastmod>2024-03-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/BaOGkcw378Th1tdIkbTH</loc>
+    <lastmod>2024-03-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/american-express-senior-analyst-data-science-bangalore</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/job-backend-002</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/job-frontend-001</loc>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/job-uiux-003</loc>
+    <lastmod>2026-05-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/mtpDevZgVAAejwg3ACn7</loc>
+    <lastmod>2024-03-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/t6aw3CffM3Um0CtUT2W0</loc>
+    <lastmod>2024-03-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/job/xWgEPoRDa5A65TJeo9qV</loc>
+    <lastmod>2024-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://careeryojna.com/blog/zI3sh42fHBFLzHB9i6rL</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

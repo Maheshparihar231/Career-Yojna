@@ -5,6 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:deploy": "ng build && node scripts/generate-sitemap.js",
+    "prerender": "ng build && node scripts/prerender.js",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "deploy": "ng build && node scripts/generate-sitemap.js && firebase deploy --only hosting",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -21,6 +25,7 @@
     "@angular/platform-browser": "^16.1.0",
     "@angular/platform-browser-dynamic": "^16.1.0",
     "@angular/router": "^16.1.0",
+    "firebase-admin": "^14.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
@@ -38,6 +43,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.4.33",
+    "puppeteer": "^25.3.0",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.1.3"
   }

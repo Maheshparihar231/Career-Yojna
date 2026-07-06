@@ -41,6 +41,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import { JobDatailComponent } from './page/job-datail/job-datail.component';
 import { BlogsComponent } from './components/blogs/blogs.component';
+import { BlogDetailComponent } from './page/blog-detail/blog-detail.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
@@ -66,6 +67,7 @@ import { FaqComponent } from './page/faq/faq.component';
     WorkupdateComponent,
     JobDatailComponent,
     BlogsComponent,
+    BlogDetailComponent,
     AdPlaceholderComponent,
     FaqComponent
   ],

@@ -33,6 +33,7 @@ export class JobDatailComponent implements OnInit{
           this.job.location,
           this.job.salary
         );
+        this.seo.setJobPostingSchema(this.job);
       }
     })
   }

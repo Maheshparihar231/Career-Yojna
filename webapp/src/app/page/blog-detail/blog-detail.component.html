@@ -1,0 +1,167 @@
+<div class="page-shell min-h-screen">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="animate-pulse space-y-6">
+      <div class="h-8 bg-neutral-200 rounded w-3/4"></div>
+      <div class="h-4 bg-neutral-100 rounded w-1/3"></div>
+      <div class="h-72 bg-neutral-200 rounded-xl"></div>
+      <div class="space-y-3">
+        <div class="h-4 bg-neutral-100 rounded w-full"></div>
+        <div class="h-4 bg-neutral-100 rounded w-5/6"></div>
+        <div class="h-4 bg-neutral-100 rounded w-4/5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && error" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <div class="p-8 rounded-2xl" style="background: var(--color-surface-raised); border: 1px solid var(--color-border);">
+      <mat-icon class="text-red-500 mb-4" style="font-size: 48px; width: 48px; height: 48px;">error_outline</mat-icon>
+      <h2 class="text-xl font-bold mb-2" style="color: var(--color-text);">{{ error }}</h2>
+      <p class="mb-6" style="color: var(--color-text-secondary);">The blog post you're looking for doesn't exist or has been removed.</p>
+      <button (click)="goBack()"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-colors"
+        style="background: var(--color-primary); hover: var(--color-primary-hover);">
+        <mat-icon class="text-sm">arrow_back</mat-icon>
+        Back to Blogs
+      </button>
+    </div>
+  </div>
+
+  <!-- Blog Detail -->
+  <div *ngIf="!loading && !error && blog">
+    <!-- Hero Banner -->
+    <div class="relative overflow-hidden" style="background: linear-gradient(135deg, var(--color-hero-from), var(--color-hero-to));">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white/20 blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-white/10 blur-3xl"></div>
+      </div>
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-12">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 mb-6 text-sm">
+          <a routerLink="/home" class="text-white/70 hover:text-white transition-colors">Home</a>
+          <mat-icon class="text-white/40 text-sm">chevron_right</mat-icon>
+          <a routerLink="/blogs" class="text-white/70 hover:text-white transition-colors">Blog</a>
+          <mat-icon class="text-white/40 text-sm">chevron_right</mat-icon>
+          <span class="text-white/90 truncate max-w-[200px]">{{ blog.title }}</span>
+        </nav>
+
+        <!-- Category & Read Time -->
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 text-xs font-semibold rounded-full bg-white/20 text-white">
+            {{ blog.category }}
+          </span>
+          <span class="flex items-center gap-1 text-sm text-white/80">
+            <mat-icon class="text-sm">schedule</mat-icon>
+            {{ blog.readTime }}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-4 brand-heading">
+          {{ blog.title }}
+        </h1>
+
+        <!-- Author & Date -->
+        <div class="flex items-center gap-4 text-white/80">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <mat-icon class="text-sm text-white">person</mat-icon>
+            </div>
+            <span class="text-sm font-medium">{{ blog.author }}</span>
+          </div>
+          <span class="text-white/40">•</span>
+          <span class="text-sm">{{ blog.date | date:'mediumDate' }}</span>
+          <span *ngIf="blog.views" class="text-white/40">•</span>
+          <span *ngIf="blog.views" class="flex items-center gap-1 text-sm">
+            <mat-icon class="text-sm">visibility</mat-icon>
+            {{ blog.views }} views
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <!-- Featured Image -->
+      <div class="mb-8 -mt-6 relative z-10">
+        <img [src]="blog.image"
+             [alt]="blog.title"
+             class="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-xl shadow-lg"
+             style="border: 1px solid var(--color-border);" />
+      </div>
+
+      <!-- Summary -->
+      <div class="mb-8 p-5 rounded-xl" style="background: var(--color-surface-muted); border: 1px solid var(--color-border);">
+        <p class="text-base leading-relaxed italic" style="color: var(--color-text-secondary);">
+          {{ blog.summary }}
+        </p>
+      </div>
+
+      <!-- Ad Placement -->
+      <app-ad-placeholder placement="content" class="block mb-8"></app-ad-placeholder>
+
+      <!-- Blog Content -->
+      <article class="blog-content prose max-w-none" [innerHTML]="blog.content">
+      </article>
+
+      <!-- Tags -->
+      <div *ngIf="blog.tags && blog.tags.length > 0" class="mt-10 pt-6" style="border-top: 1px solid var(--color-border);">
+        <h3 class="text-sm font-semibold mb-3" style="color: var(--color-text-secondary);">Tags</h3>
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let tag of blog.tags"
+            class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+            style="background: var(--color-surface-muted); color: var(--color-text-secondary); border: 1px solid var(--color-border);">
+            #{{ tag }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Share & Actions -->
+      <div class="mt-8 flex items-center justify-between py-4" style="border-top: 1px solid var(--color-border);">
+        <button (click)="goBack()"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          style="background: var(--color-surface-muted); color: var(--color-text); border: 1px solid var(--color-border);">
+          <mat-icon class="text-sm">arrow_back</mat-icon>
+          All Blogs
+        </button>
+        <div class="flex items-center gap-3">
+          <span *ngIf="blog.likes" class="flex items-center gap-1 text-sm" style="color: var(--color-text-secondary);">
+            <mat-icon class="text-sm">favorite</mat-icon>
+            {{ blog.likes }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Ad Placement -->
+      <app-ad-placeholder placement="content" class="block my-8"></app-ad-placeholder>
+    </div>
+
+    <!-- Related Posts -->
+    <div *ngIf="relatedBlogs.length > 0" class="py-12" style="background: var(--color-surface-muted);">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text);">Related Posts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div *ngFor="let post of relatedBlogs"
+            (click)="navigateToBlog(post.id)"
+            class="cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+            style="background: var(--color-surface-raised); border: 1px solid var(--color-border);">
+            <img [src]="post.image" [alt]="post.title" class="w-full h-40 object-cover">
+            <div class="p-4">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                style="background: var(--color-primary-soft); color: var(--color-primary);">
+                {{ post.category }}
+              </span>
+              <h3 class="mt-2 text-sm font-bold line-clamp-2" style="color: var(--color-text);">{{ post.title }}</h3>
+              <p class="mt-1 text-xs line-clamp-2" style="color: var(--color-text-secondary);">{{ post.summary }}</p>
+              <div class="mt-3 flex items-center justify-between text-xs" style="color: var(--color-text-tertiary);">
+                <span>{{ post.author }}</span>
+                <span>{{ post.readTime }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
