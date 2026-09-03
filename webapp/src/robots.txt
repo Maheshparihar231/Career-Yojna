@@ -4,4 +4,4 @@ Disallow: /auth/
 Disallow: /profile/
 Disallow: /manage/
 
-Sitemap: https://careeryojna.com/sitemap.xml
+Sitemap: https://career-yojna.online/sitemap.xml

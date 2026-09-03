@@ -10,8 +10,16 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "**",
+        "source": "!/.*\\..*/",
         "destination": "/index.html"
+      }
+    ],
+    "cleanUrls": true,
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "https://career-yojna.online",
+        "type": 301
       }
     ],
     "headers": [

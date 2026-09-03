@@ -14,7 +14,7 @@ export interface PageSeo {
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
-  private baseUrl = 'https://careeryojna.com';
+  private baseUrl = 'https://career-yojna.online';
   private siteName = 'Career Yojna';
   private defaultImage = `${this.baseUrl}/assets/images/Career_Yojna.png`;
 

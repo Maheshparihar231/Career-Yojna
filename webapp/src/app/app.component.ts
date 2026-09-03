@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -11,9 +12,12 @@ export class AppComponent implements OnInit {
   title = 'webapp';
   theme: ThemeMode = 'dark';
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     const storedTheme = this.getStoredTheme();
     this.applyTheme(storedTheme);
+    this.trackPageViews();
   }
 
   toggleTheme(): void {
@@ -42,5 +46,24 @@ export class AppComponent implements OnInit {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('career-yojna-theme', theme);
     }
+  }
+
+  private trackPageViews(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this.router.events.subscribe(event => {
+      if (!(event instanceof NavigationEnd)) {
+        return;
+      }
+
+      const gtag = (window as any).gtag;
+      if (typeof gtag === 'function') {
+        gtag('config', 'G-PCHPFX5G5T', {
+          page_path: event.urlAfterRedirects
+        });
+      }
+    });
   }
 }
