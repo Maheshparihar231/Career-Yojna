@@ -86,15 +86,59 @@ export class DataService {
   }
 
   /**
-   * Get all jobs with caching.
+   * Get all active jobs with caching (filters inactive jobs).
    */
   getAllJobs(): Observable<Job[]> {
     this.isLoadingJobs$.next(true);
-    return this.allJobs$;
+    return this.allJobs$.pipe(
+      map(jobs => jobs.filter(job => job.active !== false)) // Show all jobs where active is true or undefined (for backward compatibility)
+    );
   }
 
   /**
-   * Get jobs with pagination support
+   * Get jobs with server-side pagination (recommended for large datasets)
+   */
+  getJobsPagedFromFirestore(
+    pageSize: number = 10,
+    pageNumber: number = 0,
+    sortField: string = 'post_date',
+    sortDirection: 'asc' | 'desc' = 'desc'
+  ): Observable<{ jobs: Job[]; total: number }> {
+    return new Observable<{ jobs: Job[]; total: number }>(observer => {
+      let query = this.afs.collection(this.JOBS_COLLECTION, ref => {
+        let q = ref.orderBy(sortField, sortDirection).limit(pageSize * (pageNumber + 1));
+        return q;
+      }).snapshotChanges().subscribe(
+        snapshots => {
+          const allJobs = snapshots.map(doc => {
+            const data = doc.payload.doc.data() as Record<string, any>;
+            const id = doc.payload.doc.id;
+            return this.transformJob(data, id);
+          });
+
+          // Client-side slicing to get the current page
+          const start = pageNumber * pageSize;
+          const pageJobs = allJobs.slice(start, start + pageSize);
+          
+          observer.next({ jobs: pageJobs, total: allJobs.length });
+          observer.complete();
+        },
+        error => {
+          console.error('Error fetching paginated jobs:', error);
+          observer.error(error);
+        }
+      );
+    }).pipe(
+      catchError((error: any) => {
+        console.error('Paginated jobs fetch error:', error);
+        this.jobsError$.next(error.message || 'Failed to load jobs');
+        return of({ jobs: [], total: 0 });
+      })
+    );
+  }
+
+  /**
+   * Get jobs with pagination support (client-side, from cache)
    */
   getJobsPaginated(pageSize: number = 10, pageNumber: number = 0): Observable<Job[]> {
     return this.getAllJobs().pipe(
@@ -106,7 +150,7 @@ export class DataService {
   }
 
   /**
-   * Get job by ID.
+   * Get job by ID (returns job even if inactive for detail view).
    */
   getJobById(jobId: string): Observable<Job | undefined> {
     return this.afs.collection(this.JOBS_COLLECTION).doc(jobId).valueChanges().pipe(
@@ -210,7 +254,8 @@ export class DataService {
       responsibilities: Array.isArray(data['responsibilities']) ? data['responsibilities'] : [],
       requirements: Array.isArray(data['requirements']) ? data['requirements'] : [],
       deadline: data['deadline'] ? new Date(data['deadline']) : new Date(),
-      views: data['views'] || 0
+      views: data['views'] || 0,
+      active: data['active'] !== false // Default to true if not specified
     } as Job;
   }
 

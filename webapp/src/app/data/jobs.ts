@@ -22,4 +22,5 @@ export interface Job {
     deadline: Date;
     views?: number; // Number of times the job has been viewed
     last_viewed?: Date; // Last time the job was viewed
+    active?: boolean; // Whether the job position is still active
 }

@@ -91,43 +91,50 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   getAllJobs() {
-    console.log('Starting getAllJobs...');
+    console.log('Starting getAllJobs for current page:', this.currentPage);
     this.isLoading = true;
     this.error = null;
     
-    this.dataService.getAllJobs()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (jobs: Job[]) => {
-          console.log('Jobs received:', jobs.length);
-          
-          this.jobList = jobs.map(job => ({
-            ...job,
-            img_url: this.validateImageUrl(job.img_url),
-            post_date: this.validateDate(job.post_date),
-            deadline: this.validateDate(job.deadline)
-          }));
-          
-          // Extract filter options
-          this.extractFilterOptions();
-          
-          if (this.jobList.length > 0) {
-            console.log('Processed jobs:', this.jobList.length);
-            this.applyFilters();
-            this.getTopJobs();
-            this.isLoading = false;
-          } else {
-            console.log('No jobs received');
-            this.error = 'No jobs available at the moment.';
+    // Load full dataset for filtering purposes (once on init)
+    if (this.jobList.length === 0) {
+      this.dataService.getAllJobs()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (jobs: Job[]) => {
+            console.log('All jobs cached:', jobs.length);
+            
+            this.jobList = jobs.map(job => ({
+              ...job,
+              img_url: this.validateImageUrl(job.img_url),
+              post_date: this.validateDate(job.post_date),
+              deadline: this.validateDate(job.deadline)
+            }));
+            
+            // Extract filter options
+            this.extractFilterOptions();
+            
+            if (this.jobList.length > 0) {
+              console.log('Processed jobs:', this.jobList.length);
+              this.applyFilters();
+              this.getTopJobs();
+              this.isLoading = false;
+            } else {
+              console.log('No jobs received');
+              this.error = 'No jobs available at the moment.';
+              this.isLoading = false;
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching jobs:', err);
+            this.error = "Failed to load jobs. Please try again later.";
             this.isLoading = false;
           }
-        },
-        error: (err) => {
-          console.error('Error fetching jobs:', err);
-          this.error = "Failed to load jobs. Please try again later.";
-          this.isLoading = false;
-        }
-      });
+        });
+    } else {
+      // Re-apply filters when page changes
+      this.isLoading = false;
+      this.applyFilters();
+    }
   }
 
   /**

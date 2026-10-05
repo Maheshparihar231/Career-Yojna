@@ -15,13 +15,6 @@
       }
     ],
     "cleanUrls": true,
-    "redirects": [
-      {
-        "source": "**",
-        "destination": "https://career-yojna.online",
-        "type": 301
-      }
-    ],
     "headers": [
       {
         "source": "**/*.@(js|css)",

@@ -16,12 +16,51 @@
         </div>
     </nav>
 
-    <!-- <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
-        <app-ad-placeholder placement="header" class="block"></app-ad-placeholder>
-    </div> -->
-
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Job Not Found Message -->
+        <div *ngIf="jobNotFound" class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <mat-icon class="text-red-500 text-2xl">error_outline</mat-icon>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-red-800">Job Position Not Found</h3>
+                    <p class="mt-2 text-sm text-red-700">
+                        The job position you are looking for does not exist or has been removed.
+                    </p>
+                    <div class="mt-4">
+                        <a href="/search" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            <mat-icon class="text-sm mr-2">arrow_back</mat-icon>
+                            Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Position Filled Message -->
+        <div *ngIf="jobInactive" class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <mat-icon class="text-yellow-600 text-2xl">info</mat-icon>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-yellow-800">Position Filled</h3>
+                    <p class="mt-2 text-sm text-yellow-700">
+                        This job position has been filled or is no longer available. Please check other openings.
+                    </p>
+                    <div class="mt-4">
+                        <a href="/search" class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                            <mat-icon class="text-sm mr-2">arrow_back</mat-icon>
+                            Browse Other Jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Details (shown only if job is active) -->
+        <div *ngIf="job" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main Content -->
             <div class="lg:col-span-2">
                 <!-- Job Header -->
@@ -47,18 +86,13 @@
                                         'bg-purple-50 text-purple-700': job?.job_type === 'Contract'
                                       }">
                                     <mat-icon class="text-sm mr-1">work</mat-icon>
-                                    {{job?.job_type}}
-                                </span>
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-700">
+                                    {{job?.job_type}}</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-700">
                                     <mat-icon class="text-sm mr-1">location_on</mat-icon>
-                                    {{job?.location}}
-                                </span>
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-50 text-green-700">
+                                    {{job?.location}}</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-50 text-green-700">
                                     <mat-icon class="text-sm mr-1">payments</mat-icon>
-                                    ₹{{job?.salary | number}}
-                                </span>
+                                    ₹{{job?.salary | number}}</span>
                             </div>
                         </div>
                     </div>
@@ -86,49 +120,47 @@
                         <h3 class="text-lg font-semibold mb-3">Required Skills</h3>
                         <div class="flex flex-wrap gap-2">
                             <span *ngFor="let skill of job?.skills_required"
-                                class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                                {{skill}}
-                            </span>
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-50 text-blue-700">
+                                {{skill}}</span>
                         </div>
                     </div>
                     <!-- Benefits -->
                     <div *ngIf="job?.benefits?.length">
                         <h3 class="text-lg font-semibold mb-3">Benefits</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div *ngFor="let benefit of job?.benefits" class="flex items-center gap-2 text-neutral-700">
-                                <mat-icon class="text-green-600">check_circle</mat-icon>
-                                {{benefit}}
-                            </div>
-                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-neutral-700">
+                            <li *ngFor="let benefit of job?.benefits">{{benefit}}</li>
+                        </ul>
                     </div>
                 </div>
-                <!-- Company Description -->
-                <div class="theme-card rounded-2xl p-6 mb-6">
-                    <h2 class="text-lg font-semibold mb-4">About {{job?.company_name}}</h2>
-                    <p class="text-neutral-700">
-                        {{job?.company_name}} is looking for a talented {{job?.role}} to join our team.
-                    </p>
-                </div>
             </div>
+
             <!-- Sidebar -->
-            <div class="lg:col-span-1 z-10">
-                <!-- Quick Apply -->
-                <div class="theme-card rounded-2xl p-6 mb-6 sticky top-6 z-50">
-                    <h2 class="text-lg font-semibold mb-4">Quick Apply</h2>
+            <div class="lg:col-span-1">
+                <div class="theme-card rounded-2xl p-6 sticky top-4">
+                    <h3 class="text-lg font-semibold mb-4">Job Details</h3>
                     <div class="space-y-4">
-                        <div class="flex items-center gap-2 text-neutral-700">
-                            <mat-icon>business</mat-icon>
-                            <span>{{job?.department || 'All Departments'}}</span>
+                        <div class="flex items-start gap-2">
+                            <mat-icon class="text-primary-600 mt-1">work_outline</mat-icon>
+                            <div>
+                                <p class="text-sm text-neutral-500">Job Type</p>
+                                <p class="text-neutral-900 font-medium">{{job?.job_type}}</p>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 text-neutral-700">
-                            <mat-icon>work</mat-icon>
-                            <span>{{job?.experience || 'Experience Required'}}</span>
+                        <div class="border-t pt-4 flex items-start gap-2">
+                            <mat-icon class="text-primary-600 mt-1">school</mat-icon>
+                            <div>
+                                <p class="text-sm text-neutral-500">Qualification</p>
+                                <p class="text-neutral-900 font-medium">{{job?.qualification}}</p>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 text-neutral-700">
-                            <mat-icon>school</mat-icon>
-                            <span>{{job?.qualification || 'Qualification Required'}}</span>
+                        <div class="border-t pt-4 flex items-start gap-2">
+                            <mat-icon class="text-primary-600 mt-1">trending_up</mat-icon>
+                            <div>
+                                <p class="text-sm text-neutral-500">Experience</p>
+                                <p class="text-neutral-900 font-medium">{{job?.experience}}</p>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 text-red-600">
+                        <div class="border-t pt-4 flex items-center gap-2 text-red-600">
                             <mat-icon>event</mat-icon>
                             <span>Deadline: {{job?.deadline | date:'dd MMM, yyyy'}}</span>
                         </div>
